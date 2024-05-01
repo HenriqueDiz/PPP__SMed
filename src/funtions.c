@@ -3,95 +3,86 @@
 #include <stdlib.h>
 #include "estruturas.h"
 
-registo lerRegistos(char *nomeFicheiro) {
-    //ler ficheiro
-    FILE *ficheiro = fopen(nomeFicheiro, "r");
+/////////////////////////////// Ficheiro Registos ///////////////////////////////
+REGISTOS novo_registro() {
+    REGISTOS novo = (REGISTOS)malloc(sizeof(bloco_registo));
 
-    //se o ficheiro nao abrir/nao existir
-    if (!ficheiro) {
-        printf("Erro!! Ficheiro n/ existe! %s\n", nomeFicheiro);
-        return NULL;
+    if (novo == NULL) {
+        printf("Erro ao alocar memória para o novo registro.\n");
+        exit(1);
     }
+    novo->prox = NULL;
+    return novo;
+}
 
-    //se o ficheiro abrir/existir, criar as listas
-    registo *lista = NULL;
-    registo *atual = NULL;
+void add_registro(REGISTOS* lista_registros, registo novo_registo) {
+    REGISTOS novo = novo_registro();
+    novo->reg = novo_registo;
+    novo->prox = *lista_registros;
+    *lista_registros = novo;
+}
 
-
-    RegistoDoente novoRegisto;
-
-    while (fscanf(ficheiro, "%d\n", &novoRegisto.id_doente) == 1) {
-        fgets(novoRegisto.data_registo, sizeof(novoRegisto.data_registo), ficheiro);
-        novoRegisto.data_registo[strcspn(novoRegisto.data_registo, "\n")] = '\0'; // Remove o '\n' do final da string
-        fscanf(ficheiro, "%d\n%d\n%d\n%d\n", &novoRegisto.tensao_max, &novoRegisto.tensao_min, &novoRegisto.peso, &novoRegisto.altura);
-
-        registo *novoNode = (registo *)malloc(sizeof(registo));
-        novoNode->registo = novoRegisto;
-        novoNode->next = NULL;
-
-        if (lista == NULL) {
-            lista = novoNode;
-        } else {
-            atual->next = novoNode;
+void load_registros(PACIENTES lista_pacientes) {
+    FILE *ficheiro = fopen("docs/registos.txt", "r");
+    if (ficheiro == NULL) {
+        printf("Erro ao abrir o ficheiro registos.txt (Processo: Loading)\n");
+        exit(1);
+    }
+    int id;
+    registo novo_registo;
+    while (fscanf(ficheiro, "%d", &id) == 1) {
+        fscanf(ficheiro, "%d/%d/%d", &novo_registo.data_registo.dia, &novo_registo.data_registo.mes, &novo_registo.data_registo.ano);
+        fscanf(ficheiro, "%d", &novo_registo.tensao_max);
+        fscanf(ficheiro, "%d", &novo_registo.tensao_min);
+        fscanf(ficheiro, "%d", &novo_registo.peso);
+        fscanf(ficheiro, "%d", &novo_registo.altura);
+        // Procurar pelo ID
+        PACIENTES paciente = lista_pacientes;
+        while (paciente != NULL && paciente->pessoa.id != id) {
+            paciente = paciente->prox;
         }
-        atual = novoNode;
-    }
-
-    fclose(ficheiro);
-    return lista;
-}
-
-void guardar_txt_registos(registo lista, char *nomeFicheiro) {
-    FILE *ficheiro = fopen(nomeFicheiro, "w");
-    if (!ficheiro) {
-        printf("Erro ao abrir o ficheiro %s\n", nomeFicheiro);
-        return;
-    }
-
-    registo *atual = lista;
-    while (atual != NULL) {
-        fprintf(ficheiro, "%d\n", atual->registo.id_doente);
-        fprintf(ficheiro, "%s\n", atual->registo.data_registo);
-        fprintf(ficheiro, "%d\n", atual->registo.tensao_max);
-        fprintf(ficheiro, "%d\n", atual->registo.tensao_min);
-        fprintf(ficheiro, "%d\n", atual->registo.peso);
-        fprintf(ficheiro, "%d\n", atual->registo.altura);
-        atual = atual->next;
-    }
-
-    fclose(ficheiro);
-}
-void adicionarRegisto(registo lista, RegistoDoente novoRegisto) {
-    registo *novoNode = (registo *)malloc(sizeof(registo));
-    novoNode->registo = novoRegisto;
-    novoNode->next = *lista;
-    *lista = novoNode;
-}
-
-registo procurarUltimoRegistoPorId(registo lista, int id) {
-    registo ultimoRegisto = NULL;
-    while (lista != NULL) {
-        if (lista->registo.id_doente == id) {
-            ultimoRegisto = lista;
+        // Caso encontre, adicionamos novo registo
+        if (paciente != NULL) {
+            add_registro(&paciente->pessoa.pessoa_registo, novo_registo);
         }
-        lista = lista->next;
     }
-    return ultimoRegisto;
-}
-void free_lista_registos(registo lista) {
-    registo atual = lista;
-    while (atual != NULL) {
-        registo *temp = atual;
-        atual = atual->next;
-        free(temp);
+    if (fclose(ficheiro) == EOF){
+        printf("Erro ao fechar o ficheiro registos.txt (Processo: Loading)\n");        
+        exit(1);
     }
 }
 
+void save_registros(PACIENTES lista_pacientes) {
+    FILE* ficheiro = fopen("docs/registos.txt", "w");
+    if (ficheiro == NULL) {
+        printf("Erro ao fechar o ficheiro registos.txt (Processo: Saving)\n");   
+        exit(1);
+    }
+    PACIENTES paciente= lista_pacientes->prox; // Salta o Header
+    while (paciente != NULL) {
+        REGISTOS registro = paciente->pessoa.pessoa_registo;
+        while (registro != NULL) {
+            fprintf(ficheiro, "%d\n", paciente->pessoa.id);
+            fprintf(ficheiro, "%d/%d/%d\n", registro->reg.data_registo.dia, registro->reg.data_registo.mes, registro->reg.data_registo.ano);
+            fprintf(ficheiro, "%d\n", registro->reg.tensao_max);
+            fprintf(ficheiro, "%d\n", registro->reg.tensao_min);
+            fprintf(ficheiro, "%d\n", registro->reg.peso);
+            fprintf(ficheiro, "%d\n", registro->reg.altura);
+            registro = registro->prox;
+        }
+        paciente = paciente->prox;
+    }
+    if (fclose(ficheiro) == EOF){
+        printf("Erro ao fechar o ficheiro registos.txt (Processo: Saving)\n");        
+        exit(1);
+    }
+}
 
-PACIENTES cria(){
+/////////////////////////////// Ficheiro Pacientes ///////////////////////////////
+
+PACIENTES cria_pacientes(){
     PACIENTES aux;
-    /* FAZER AQUI UMA FUNCAO QUE VERIFICA SE JÁ EXISTIAM DADOS EM FICHEIROS */
-    info novo = {{1,1,2000},"11111111-1-AB1","header@header.pt","Header", 0, 0};  // Define a informações do Header e iremos usar o 'id' para armazenar o número de pacientes
+    info novo = {{1,1,2000},"11111111-1-AB1","header@header.pt","Header", 0, 0, NULL};  // Define a informações do Header e iremos usar o 'id' para armazenar o número de pacientes
     aux = (PACIENTES) malloc (sizeof(bloco));
     if (aux != NULL) {
         aux->pessoa = novo;
@@ -100,29 +91,79 @@ PACIENTES cria(){
     return aux;
 }
 
-void procura(PACIENTES lista, char* chave_nome, PACIENTES* ant, PACIENTES* actual){
-    *ant = lista; *actual = lista->prox;
-    while ((*actual) != NULL && strcasecmp((*actual)->pessoa.nome, chave_nome) < 0) { /* Ordenamos os pacientes na Lista por ordem Alfabética*/
-        *ant = *actual;
-        *actual = (*actual)->prox;
+PACIENTES novo_paciente() {
+    PACIENTES novo = (PACIENTES)malloc(sizeof(bloco));
+    if (novo == NULL) {
+        printf("Erro de alloc.\n");
+        exit(1);
     }
-    if ((*actual) != NULL && strcasecmp((*actual)->pessoa.nome, chave_nome) != 0)
-        *actual = NULL;   /* Paciente não encontrado, ou seja, é um novo paciente */
+    novo->prox = NULL;
+    novo->pessoa.pessoa_registo = NULL;
+    return novo;
 }
 
-void insere(PACIENTES lista, info novo) {
-    PACIENTES no, ant, inutil;
-    no = (PACIENTES) malloc (sizeof(bloco));
-    if (no != NULL) {
-        no->pessoa = novo;
-        procura(lista, novo.nome, &ant, &inutil);
-        no->prox= ant->prox;
-        ant->prox= no;
-    }
-    /* FALTA FUNCAO PARA ESCREVER PARA O FICHEIRO */
+void add_paciente(PACIENTES* lista_pacientes, info dados) {
+    PACIENTES novo = novo_paciente();
+    novo->pessoa = dados;
+    novo->prox = *lista_pacientes;
+    *lista_pacientes = novo;
 }
 
-void register_new_patient(PACIENTES informacao) {
+PACIENTES load_pacientes() {
+    FILE *ficheiro = fopen("docs/doentes.txt", "r");
+
+    if (ficheiro == NULL) {
+        printf("Erro ao abrir o ficheiro doentes.txt (Processo: Loading)\n");        
+        exit(1);
+    }
+    PACIENTES lista_pacientes = cria_pacientes();
+    info dados;
+
+    while (fscanf(ficheiro, "%d", &dados.id) == 1) {
+        fgetc(ficheiro);
+        fgets(dados.nome, sizeof(dados.nome), ficheiro);
+        dados.nome[strcspn(dados.nome, "\n")] = '\0';
+        fscanf(ficheiro, "%d/%d/%d", &dados.data_nascimento.dia, &dados.data_nascimento.mes, &dados.data_nascimento.ano);
+        fscanf(ficheiro, "%s", dados.cartao_de_cidadao);
+        fscanf(ficheiro, "%d", &dados.telefone);
+        fscanf(ficheiro, "%s", dados.email);
+
+        add_paciente(&lista_pacientes, dados);
+
+        fgetc(ficheiro); // delete char nova linha após email
+    }if (fclose(ficheiro) == EOF){
+        printf("Erro ao fechar o ficheiro doentes.txt (Processo: Loading)\n");       
+        exit(1);
+    }
+    return lista_pacientes;
+}
+
+void save_pacientes(PACIENTES lista_pacientes) {
+    FILE* ficheiro = fopen("docs/doentes.txt", "w");
+    if (ficheiro == NULL) {
+        printf("Erro ao abrir o ficheiro doentes.txt (Processo: Saving)\n");       
+        exit(1);
+    }
+
+    PACIENTES paciente = lista_pacientes->prox; // Saltamos o Header
+    while (paciente != NULL) {
+        fprintf(ficheiro, "%d\n", paciente->pessoa.id);
+        fprintf(ficheiro, "%s\n", paciente->pessoa.nome);
+        fprintf(ficheiro, "%d/%d/%d\n", paciente->pessoa.data_nascimento.dia, paciente->pessoa.data_nascimento.mes, paciente->pessoa.data_nascimento.ano);
+        fprintf(ficheiro, "%s\n", paciente->pessoa.cartao_de_cidadao);
+        fprintf(ficheiro, "%d\n", paciente->pessoa.telefone);
+        fprintf(ficheiro, "%s\n", paciente->pessoa.email);
+        paciente = paciente->prox;
+    }
+    if (fclose(ficheiro) == EOF){
+        printf("Erro ao fechar o ficheiro doentes.txt (Processo: Saving)\n");       
+        exit(1);
+    }
+}
+
+/////////////////////////////// Funcionalidades da aplicação ///////////////////////////////
+
+void registar(PACIENTES informacao) {
     info novo;
     printf("\nQual o nome do paciente ? ");
     fgets(novo.nome, 40, stdin);
@@ -142,46 +183,47 @@ void register_new_patient(PACIENTES informacao) {
     printf("Qual o email do paciente ? ");
     fgets(novo.email, 40, stdin);
     novo.email[strcspn(novo.email, "\n")] = '\0';
-    insere(informacao, novo);
+    add_paciente(&informacao, novo);
 }
 
 void imprime(PACIENTES lista){
-    PACIENTES aux = lista->prox; /* Salta o header */
+    PACIENTES aux = lista->prox; // Salta o header
     while (aux) {
-        printf("O nome do paciente é : %s\n", aux->pessoa.nome);
-        printf("O email do paciente é : %s\n", aux->pessoa.email);
-        printf("A data de nascimento do paciente é : %d/%d/%d\n", aux->pessoa.data_nascimento.dia,aux->pessoa.data_nascimento.mes,aux->pessoa.data_nascimento.ano);
-        printf("O cartão de cidadão do paciente é : %s\n", aux->pessoa.cartao_de_cidadao);
-        printf("O telefone do paciente é : %d\n", aux->pessoa.telefone);
-        printf("O ID do paciente é : %d\n", aux->pessoa.id);
-        printf("\n");
+        printf("ID: %d\n", aux->pessoa.id);
+        printf("Nome: %s\n", aux->pessoa.nome);
+        printf("Data de Nascimento: %d/%d/%d\n", aux->pessoa.data_nascimento.dia, aux->pessoa.data_nascimento.mes, aux->pessoa.data_nascimento.ano);
+        printf("Cartão de Cidadão: %s\n", aux->pessoa.cartao_de_cidadao);
+        printf("Telefone: %d\n", aux->pessoa.telefone);
+        printf("Email: %s\n\n", aux->pessoa.email);
         aux = aux->prox;
     }
 }
 
-// FALTAM DUAS FUNÇÕES : funcao de verificar numbers e outra para limpar o buffer de entrada com ciclo no getchar()
+// TODO - Missing 2 functions : funcao de verificar numbers e outra para limpar o buffer de entrada com ciclo no getchar()
+
+/////////////////////////////// Função Running ///////////////////////////////
 
 void running(PACIENTES informacao) {
     int choice;
     while (1) {
-        printf("////// [Hospital da Universidade de Coimbra] //////// \n");
-        printf("/     1. Adicionar novo Doente                      \\\n");
-        printf("/     2. Eliminar Doente Existente                  \\\n");
-        printf("/     3. Consultar Doentes (Ordem Alfabética)       \\\n");
-        printf("/     4. Consultar Doentes - Tensão                 \\\n");
-        printf("/     5. Novo Registo Clínico                       \\\n");
-        printf("/     6. Listar toda a informação de um pacient     \\\n");
-        printf("/     7. Sair                                       \\\n");
-        printf("////// [Hospital da Universidade de Coimbra] //////// \n");        
+        printf("////// [Hospital da Universidade de Coimbra]  //////\n");
+        printf("///   1. Adicionar novo Doente                   ///\n");
+        printf("///   2. Eliminar Doente Existente               ///\n");
+        printf("///   3. Consultar Doentes (Ordem Alfabética)    ///\n");
+        printf("///   4. Consultar Doentes - Tensão              ///\n");
+        printf("///   5. Novo Registo Clínico                    ///\n");
+        printf("///   6. Listar toda a informação de um paciente ///\n");
+        printf("///   7. Sair                                    ///\n");
+        printf("////// [Hospital da Universidade de Coimbra]  //////\n");       
         char input[100];
         printf("\nQual a operação pretendida? ");
         fgets(input, 100, stdin);
-        if (sscanf(input, "%d", &choice)!= 1 || choice < 1 || choice > 7 || input[1] != '\n')  // Isto de SAIR (Só é preciso 1 ciclo)
+        if (sscanf(input, "%d", &choice)!= 1 || choice < 1 || choice > 7 || input[1] != '\n')
             printf("\nInput inválido. Por favor, introduza um número entre 1 e 7.\n");
-        else{ 
+        else { 
             switch (choice) {
                 case 1:
-                    register_new_patient(informacao); // Introduzir dados de um novo paciente
+                    registar(informacao); // Introduzir dados de um novo paciente
                     break;
                 case 2:
                     // Eliminar um paciente existente
@@ -196,13 +238,11 @@ void running(PACIENTES informacao) {
                     // Listar toda a informação de um paciente
                     break;
                 case 6:
-                    // Novo registo de um paciente
+                    imprime(informacao); // TODO: just to test if it works
                     break;
                 case 7:
                     printf("\n!!! Programa Terminado !!!\n\n");
                     return;
-                default:
-                    printf("\n!!! NOPE !!!\n\n");
             }
         }
     }
