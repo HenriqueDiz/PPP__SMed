@@ -40,9 +40,8 @@ void insere_registo(bloco_registo registo, PACIENTES lista_pacientes, int id) {
             paciente->pessoa.pessoa_registo->reg = registo.reg;
             paciente->pessoa.pessoa_registo->prox = NULL;
         } else {                                       // ou seja, não é o primeiro registo
-            REGISTOS novo_registo = (REGISTOS) malloc(sizeof(bloco_registo));
-            novo_registo->reg = registo.reg;
-            novo_registo->prox = NULL;
+            REGISTOS novo_registo = (REGISTOS) malloc(sizeof(bloco_registo)); 
+            novo_registo->reg = registo.reg;      // EPA ISTO NAO FAZ SENTIDO NENHUM, mas funciona por alguma razao :3
             novo_registo->prox = paciente->pessoa.pessoa_registo;
             paciente->pessoa.pessoa_registo = novo_registo;
         }
