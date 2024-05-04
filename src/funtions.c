@@ -5,7 +5,7 @@
 
 /////////////////////////////// Funções Auxiliares ///////////////////////////////
 
-int verifica_numeros(const char *input) {  //implementar depois no loop, very raw
+int verifica_numeros(const char* input) {  //implementar depois no loop, very raw
     for (int i = 0; input[i] != '\0'; i++) {
         if (input[i] < '0' || input[i] > '9')
             return 0; // nao é numero
@@ -30,49 +30,42 @@ void limpar_buffer() { //very raw tbm
 
 /////////////////////////////// Ficheiro Registos ///////////////////////////////
 
-REGISTOS novo_registro() {
-    REGISTOS novo = (REGISTOS)malloc(sizeof(bloco_registo));
-
-    if (novo == NULL) {
-        printf("Erro ao alocar memória para o novo registro.\n");
-        exit(1);
+void insere_registo(bloco_registo registo, PACIENTES lista_pacientes, int id) {
+    PACIENTES paciente = lista_pacientes;
+    while (paciente != NULL && paciente->pessoa.id != id)
+        paciente = paciente->prox;
+    if (paciente != NULL) {
+        if (paciente->pessoa.pessoa_registo == NULL) { // ou seja, é o primeiro registo
+            paciente->pessoa.pessoa_registo = (REGISTOS) malloc(sizeof(bloco_registo));
+            paciente->pessoa.pessoa_registo->reg = registo.reg;
+            paciente->pessoa.pessoa_registo->prox = NULL;
+        } else {                                       // ou seja, não é o primeiro registo
+            REGISTOS novo_registo = (REGISTOS) malloc(sizeof(bloco_registo));
+            novo_registo->reg = registo.reg;
+            novo_registo->prox = NULL;
+            novo_registo->prox = paciente->pessoa.pessoa_registo;
+            paciente->pessoa.pessoa_registo = novo_registo;
+        }
+    } else {
+        printf("Paciente com ID %d não encontrado\n", id);
     }
-    novo->prox = NULL;
-    return novo;
-}
-
-// TODO: DO THEY WORK FINE ???? : IF NOT USE FUNCTIONS FROM SLIDE MAYBE 
-
-void add_registro(REGISTOS* lista_registros, registo novo_registo) {
-    REGISTOS novo = novo_registro();
-    novo->reg = novo_registo;
-    novo->prox = *lista_registros;
-    *lista_registros = novo;
 }
 
 void load_registros(PACIENTES lista_pacientes) {
-    FILE *ficheiro = fopen("docs/registos.txt", "r");
+    FILE* ficheiro = fopen("docs/registos.txt", "r");
     if (ficheiro == NULL) {
         printf("Erro ao abrir o ficheiro registos.txt (Processo: Loading)\n");
         exit(1);
     }
     int id;
-    registo novo_registo;
     while (fscanf(ficheiro, "%d", &id) == 1) {
-        fscanf(ficheiro, "%d/%d/%d", &novo_registo.data_registo.dia, &novo_registo.data_registo.mes, &novo_registo.data_registo.ano);
-        fscanf(ficheiro, "%d", &novo_registo.tensao_max);
-        fscanf(ficheiro, "%d", &novo_registo.tensao_min);
-        fscanf(ficheiro, "%d", &novo_registo.peso);
-        fscanf(ficheiro, "%d", &novo_registo.altura);
-        // Procurar pelo ID
-        PACIENTES paciente = lista_pacientes;
-        while (paciente != NULL && paciente->pessoa.id != id) {
-            paciente = paciente->prox;
-        }
-        // Caso encontre, adicionamos novo registo
-        if (paciente != NULL) {
-            add_registro(&paciente->pessoa.pessoa_registo, novo_registo);
-        }
+        bloco_registo lista_registo;
+        fscanf(ficheiro, "%d/%d/%d", &lista_registo.reg.data_registo.dia, &lista_registo.reg.data_registo.mes, &lista_registo.reg.data_registo.ano);
+        fscanf(ficheiro, "%d", &lista_registo.reg.tensao_max);
+        fscanf(ficheiro, "%d", &lista_registo.reg.tensao_min);
+        fscanf(ficheiro, "%d", &lista_registo.reg.peso);
+        fscanf(ficheiro, "%d", &lista_registo.reg.altura);
+        insere_registo(lista_registo, lista_pacientes, id);
     }
     if (fclose(ficheiro) == EOF){
         printf("Erro ao fechar o ficheiro registos.txt (Processo: Loading)\n");        
@@ -86,7 +79,7 @@ void save_registros(PACIENTES lista_pacientes) {
         printf("Erro ao fechar o ficheiro registos.txt (Processo: Saving)\n");   
         exit(1);
     }
-    PACIENTES paciente = lista_pacientes->prox; // Salta o Header
+    PACIENTES paciente = lista_pacientes;
     while (paciente != NULL) {
         REGISTOS registro = paciente->pessoa.pessoa_registo;
         while (registro != NULL) {
@@ -126,10 +119,10 @@ void procura(PACIENTES lista, char* chave_nome, PACIENTES* ant, PACIENTES* actua
         *actual = (*actual)->prox;
     }
     if ((*actual) != NULL && strcasecmp((*actual)->pessoa.nome, chave_nome) != 0)
-        *actual = NULL;   /* elemento não encontrado*/
+        *actual = NULL;   /* Paciente não encontrado*/
 }
 
-void add_paciente(PACIENTES lista, info novo) {
+void insere_pacientes(PACIENTES lista, info novo) {
     PACIENTES no, ant, inutil;
     no = (PACIENTES) malloc (sizeof(bloco));
     if (no != NULL) {
@@ -140,7 +133,7 @@ void add_paciente(PACIENTES lista, info novo) {
     }
 }
 
-void elimina(PACIENTES lista, info chave){
+void elimina_pacientes(PACIENTES lista, info chave){
     PACIENTES ant, actual;
     procura (lista, chave.nome, &ant, &actual);
     if (actual != NULL) {
@@ -168,7 +161,7 @@ PACIENTES load_pacientes() {
         fscanf(ficheiro, "%d", &dados.telefone);
         fscanf(ficheiro, "%s", dados.email);
         lista_pacientes->pessoa.id++; // Estamos a adicionar ao id do header para sabermos quantos doentes estão armazenados
-        add_paciente(lista_pacientes, dados);
+        insere_pacientes(lista_pacientes, dados);
     }
     if (fclose(ficheiro) == EOF){
         printf("Erro ao fechar o ficheiro doentes.txt (Processo: Loading)\n");       
@@ -223,7 +216,7 @@ void registar(PACIENTES informacao) {
     fgets(novo.email, 40, stdin);
     novo.email[strcspn(novo.email, "\n")] = '\0';
     novo.id = informacao->pessoa.id + 1;
-    add_paciente(informacao, novo);
+    insere_pacientes(informacao, novo);
 }
 
 void imprime(PACIENTES lista){
@@ -299,27 +292,25 @@ void listar_tensoes_acima(PACIENTES lista) { //nao esta a encontrar as tensoes, 
 }
 
 void listar_informacao_paciente(PACIENTES lista) { //nao esta a encontrar o id
-    int id_paciente;
+    int id = 0;
     printf("\nQual o ID do paciente? ");
-    char input_id[20]; //fazer isto como char para depois comparar como o prof aconselhou
-    fgets(input_id, 20, stdin);
-    if (verifica_numeros(input_id)) {
-        sscanf(input_id, "%d", &id_paciente);
+    scanf("%d", &id); // MUDEI SO PARA TESTAR O CODIGO ( precisava de ver se a parte dos ficheiros dos registos estava a ser bem feita)
+    if (id) {
         PACIENTES paciente = lista->prox; // ignorar header
-        while (paciente != NULL && paciente->pessoa.id != id_paciente) {
+        while (paciente != NULL && paciente->pessoa.id != id) {
             paciente = paciente->prox;
         }
         if (paciente != NULL) {
-            printf("\nInformação do Paciente ID: %d\n", paciente->pessoa.id);
+            printf("\nInformação do Paciente ID: %d\n\n", paciente->pessoa.id);
             printf("Nome: %s\n", paciente->pessoa.nome);
             printf("Data de Nascimento: %d/%d/%d\n", paciente->pessoa.data_nascimento.dia, paciente->pessoa.data_nascimento.mes, paciente->pessoa.data_nascimento.ano);
             printf("Cartão de Cidadão: %s\n", paciente->pessoa.cartao_de_cidadao);
             printf("Telefone: %d\n", paciente->pessoa.telefone);
             printf("Email: %s\n", paciente->pessoa.email);
-            printf("Registros Médicos:\n");
+            printf("\nRegistos Médicos:\n");
             REGISTOS registro = paciente->pessoa.pessoa_registo;
             while (registro != NULL) {
-                printf("Data do Registo: %d/%d/%d\n", registro->reg.data_registo.dia, registro->reg.data_registo.mes, registro->reg.data_registo.ano);
+                printf("\nData do Registo: %d/%d/%d\n", registro->reg.data_registo.dia, registro->reg.data_registo.mes, registro->reg.data_registo.ano);
                 printf("Tensão Máxima: %d\n", registro->reg.tensao_max);
                 printf("Tensão Mínima: %d\n", registro->reg.tensao_min);
                 printf("Peso: %d\n", registro->reg.peso);
@@ -327,7 +318,7 @@ void listar_informacao_paciente(PACIENTES lista) { //nao esta a encontrar o id
                 registro = registro->prox;
             }
         } else {
-            printf("Paciente com ID %d não encontrado.\n", id_paciente);
+            printf("Paciente com ID %d não encontrado.\n", id);
         }
     } else {
         printf("ID inválido. Por favor, insira um número válido.\n");
@@ -356,14 +347,14 @@ void running(PACIENTES informacao) {
             printf("\nInput inválido. Por favor, introduza um número entre 1 e 7.\n");
         else { 
             switch (choice) {
-                case 1:
-                    registar(informacao); // Introduzir dados de um novo paciente
+                case 1:   // Introduzir dados de um novo paciente
+                    registar(informacao);
                     break;
                 case 2:
                     // Eliminar um paciente existente
                     break;
-                case 3:
-                    // Listar todos os pacientes
+                case 3:   // Listar todos os pacientes
+                    imprime(informacao);
                     break;
                 case 4:
                     // Listar os pacientes com tensões máximas acima de um determinado valor
@@ -371,8 +362,8 @@ void running(PACIENTES informacao) {
                 case 5:
                     // Listar toda a informação de um paciente
                     break;
-                case 6:
-                    imprime(informacao); // TODO: just to test if it works
+                case 6:   // Listar toda a informação de um paciente
+                    listar_informacao_paciente(informacao);
                     break;
                 case 7:
                     printf("\n!!! Programa Terminado !!!\n\n");
