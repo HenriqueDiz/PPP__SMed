@@ -51,7 +51,7 @@ void insere_registo(bloco_registo registo, PACIENTES lista_pacientes, int id) {
 }
 
 void load_registros(PACIENTES lista_pacientes) {
-    FILE* ficheiro = fopen("registos.txt", "r");
+    FILE* ficheiro = fopen("docs/registos.txt", "r");
     if (ficheiro == NULL) {
         printf("Erro ao abrir o ficheiro registos.txt (Processo: Loading)\n");
         exit(1);
@@ -73,7 +73,7 @@ void load_registros(PACIENTES lista_pacientes) {
 }
 
 void save_registros(PACIENTES lista_pacientes) {
-    FILE* ficheiro = fopen("registos.txt", "w");
+    FILE* ficheiro = fopen("docs/registos.txt", "w");
     if (ficheiro == NULL) {
         printf("Erro ao fechar o ficheiro registos.txt (Processo: Saving)\n");
         exit(1);
@@ -142,7 +142,7 @@ void elimina_pacientes(PACIENTES lista, info chave){
 }
 
 PACIENTES load_pacientes() {
-    FILE *ficheiro = fopen("doentes.txt", "r");
+    FILE *ficheiro = fopen("docs/doentes.txt", "r");
 
     if (ficheiro == NULL) {
         printf("Erro ao abrir o ficheiro doentes.txt (Processo: Loading)\n");
@@ -172,7 +172,7 @@ PACIENTES load_pacientes() {
 }
 
 void save_pacientes(PACIENTES lista_pacientes) {
-    FILE* ficheiro = fopen("doentes.txt", "w");
+    FILE* ficheiro = fopen("docs/doentes.txt", "w");
     if (ficheiro == NULL) {
         printf("Erro ao abrir o ficheiro doentes.txt (Processo: Saving)\n");
         exit(1);
