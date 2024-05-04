@@ -216,7 +216,7 @@ void registar(PACIENTES informacao) {
     printf("Qual o email do paciente ? ");
     fgets(novo.email, 40, stdin);
     novo.email[strcspn(novo.email, "\n")] = '\0';
-    novo.id = informacao->pessoa.id + 1;
+    novo.id = informacao->pessoa.id ++;
     insere_pacientes(informacao, novo);
 }
 
