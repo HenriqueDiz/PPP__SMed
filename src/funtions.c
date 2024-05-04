@@ -13,7 +13,7 @@ int verifica_numeros(const char* input) {  //implementar depois no loop, very ra
     return 1; // é um numero
 }
 
-/* FEITA PELO STOR
+/* FEITA PELO STOR 
 void limpar_buffer(char* array) { //very raw tbm
     int c;
     if (array[strlen(array)-1] != '\n')
@@ -40,7 +40,7 @@ void insere_registo(bloco_registo registo, PACIENTES lista_pacientes, int id) {
             paciente->pessoa.pessoa_registo->reg = registo.reg;
             paciente->pessoa.pessoa_registo->prox = NULL;
         } else {                                       // ou seja, não é o primeiro registo
-            REGISTOS novo_registo = (REGISTOS) malloc(sizeof(bloco_registo));
+            REGISTOS novo_registo = (REGISTOS) malloc(sizeof(bloco_registo)); 
             novo_registo->reg = registo.reg;      // EPA ISTO NAO FAZ SENTIDO NENHUM, mas funciona por alguma razao :3
             novo_registo->prox = paciente->pessoa.pessoa_registo;
             paciente->pessoa.pessoa_registo = novo_registo;
@@ -67,7 +67,7 @@ void load_registros(PACIENTES lista_pacientes) {
         insere_registo(lista_registo, lista_pacientes, id);
     }
     if (fclose(ficheiro) == EOF){
-        printf("Erro ao fechar o ficheiro registos.txt (Processo: Loading)\n");
+        printf("Erro ao fechar o ficheiro registos.txt (Processo: Loading)\n");        
         exit(1);
     }
 }
@@ -75,7 +75,7 @@ void load_registros(PACIENTES lista_pacientes) {
 void save_registros(PACIENTES lista_pacientes) {
     FILE* ficheiro = fopen("docs/registos.txt", "w");
     if (ficheiro == NULL) {
-        printf("Erro ao fechar o ficheiro registos.txt (Processo: Saving)\n");
+        printf("Erro ao fechar o ficheiro registos.txt (Processo: Saving)\n");   
         exit(1);
     }
     PACIENTES paciente = lista_pacientes;
@@ -93,7 +93,7 @@ void save_registros(PACIENTES lista_pacientes) {
         paciente = paciente->prox;
     }
     if (fclose(ficheiro) == EOF){
-        printf("Erro ao fechar o ficheiro registos.txt (Processo: Saving)\n");
+        printf("Erro ao fechar o ficheiro registos.txt (Processo: Saving)\n");        
         exit(1);
     }
 }
@@ -145,7 +145,7 @@ PACIENTES load_pacientes() {
     FILE *ficheiro = fopen("docs/doentes.txt", "r");
 
     if (ficheiro == NULL) {
-        printf("Erro ao abrir o ficheiro doentes.txt (Processo: Loading)\n");
+        printf("Erro ao abrir o ficheiro doentes.txt (Processo: Loading)\n");        
         exit(1);
     }
     PACIENTES lista_pacientes = cria_pacientes();
@@ -165,7 +165,7 @@ PACIENTES load_pacientes() {
         insere_pacientes(lista_pacientes, dados);
     }
     if (fclose(ficheiro) == EOF){
-        printf("Erro ao fechar o ficheiro doentes.txt (Processo: Loading)\n");
+        printf("Erro ao fechar o ficheiro doentes.txt (Processo: Loading)\n");       
         exit(1);
     }
     return lista_pacientes;
@@ -174,7 +174,7 @@ PACIENTES load_pacientes() {
 void save_pacientes(PACIENTES lista_pacientes) {
     FILE* ficheiro = fopen("docs/doentes.txt", "w");
     if (ficheiro == NULL) {
-        printf("Erro ao abrir o ficheiro doentes.txt (Processo: Saving)\n");
+        printf("Erro ao abrir o ficheiro doentes.txt (Processo: Saving)\n");       
         exit(1);
     }
 
@@ -189,14 +189,14 @@ void save_pacientes(PACIENTES lista_pacientes) {
         paciente = paciente->prox;
     }
     if (fclose(ficheiro) == EOF){
-        printf("Erro ao fechar o ficheiro doentes.txt (Processo: Saving)\n");
+        printf("Erro ao fechar o ficheiro doentes.txt (Processo: Saving)\n");       
         exit(1);
     }
 }
 
 /////////////////////////////// Funcionalidades da aplicação ///////////////////////////////
 
-void registar(PACIENTES informacao) {
+void novo_paciente(PACIENTES informacao) {
     info novo;
     printf("\nQual o nome do paciente ? ");
     fgets(novo.nome, 40, stdin);
@@ -216,7 +216,7 @@ void registar(PACIENTES informacao) {
     printf("Qual o email do paciente ? ");
     fgets(novo.email, 40, stdin);
     novo.email[strcspn(novo.email, "\n")] = '\0';
-    novo.id = informacao->pessoa.id ++;
+    novo.id = ++informacao->pessoa.id;  // aumentamos o número de pacientes no header
     insere_pacientes(informacao, novo);
 }
 
@@ -264,6 +264,7 @@ void novo_registo(PACIENTES lista) {
     int id;
     printf("\nQual o ID do paciente para adicionar um novo registo? ");
     scanf("%d", &id);
+    limpar_buffer(); // Clear the input buffer
     if (id) {
         bloco_registo novo_registro;
         printf("Qual a data do registo (Formato : dia / mes / ano)? ");
@@ -376,16 +377,16 @@ void running(PACIENTES informacao) {
         printf("///   5. Novo Registo Clínico                    ///\n");
         printf("///   6. Listar toda a informação de um paciente ///\n");
         printf("///   7. Sair                                    ///\n");
-        printf("////// [Hospital da Universidade de Coimbra]  //////\n");
+        printf("////// [Hospital da Universidade de Coimbra]  //////\n");       
         char input[100];
         printf("\nQual a operação pretendida? ");
         fgets(input, 100, stdin);
         if (sscanf(input, "%d", &choice)!= 1 || choice < 1 || choice > 7 || input[1] != '\n')
             printf("\nInput inválido. Por favor, introduza um número entre 1 e 7.\n");
-        else {
+        else { 
             switch (choice) {
                 case 1:   // Introduzir dados de um novo paciente
-                    registar(informacao);
+                    novo_paciente(informacao);
                     break;
                 case 2:
                     // Eliminar um paciente existente
