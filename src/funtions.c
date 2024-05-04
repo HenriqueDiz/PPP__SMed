@@ -161,6 +161,7 @@ PACIENTES load_pacientes() {
         fscanf(ficheiro, "%d", &dados.telefone);
         fscanf(ficheiro, "%s", dados.email);
         lista_pacientes->pessoa.id++; // Estamos a adicionar ao id do header para sabermos quantos doentes estão armazenados
+        dados.pessoa_registo = NULL;
         insere_pacientes(lista_pacientes, dados);
     }
     if (fclose(ficheiro) == EOF){
@@ -232,7 +233,8 @@ void imprime(PACIENTES lista){
     }
 }
 
-void eliminar_paciente(PACIENTES *lista_pacientes) { //nao está a encontrar o id
+// nao se passa ponteiro como ponteiro uma lista !!!!!
+void eliminar_paciente(PACIENTES* lista_pacientes) { //nao está a encontrar o id
     int id;
     printf("\nQual o ID do paciente a ser eliminado? ");
     char input_id[20]; //meter isto como char para depois comparar como o prof aconselhou
@@ -254,6 +256,41 @@ void eliminar_paciente(PACIENTES *lista_pacientes) { //nao está a encontrar o i
         }
     } else {
         printf("ID inválido. Por favor, insira um número válido.\n"); //estamos a cair sempre aqui, ele n encontra o id
+        limpar_buffer();
+    }
+}
+
+void novo_registo(PACIENTES lista) {
+    int id;
+    printf("\nQual o ID do paciente para adicionar um novo registo? ");
+    scanf("%d", &id);
+    if (id) {
+        bloco_registo novo_registro;
+        printf("Qual a data do registo (Formato : dia / mes / ano)? ");
+        char data_registo_str[20];
+        fgets(data_registo_str, 20, stdin);
+        sscanf(data_registo_str, "%d / %d / %d", &novo_registro.reg.data_registo.dia, &novo_registro.reg.data_registo.mes, &novo_registro.reg.data_registo.ano);
+        printf("Qual a tensão máxima? ");
+        char tensao_max_str[20];
+        fgets(tensao_max_str, 20, stdin);
+        sscanf(tensao_max_str, "%d", &novo_registro.reg.tensao_max);
+        printf("Qual a tensão mínima? ");
+        char tensao_min_str[20];
+        fgets(tensao_min_str, 20, stdin);
+        sscanf(tensao_min_str, "%d", &novo_registro.reg.tensao_min);
+        printf("Qual o peso? ");
+        char peso_str[20];
+        fgets(peso_str, 20, stdin);
+        sscanf(peso_str, "%d", &novo_registro.reg.peso);
+        printf("Qual a altura? ");
+        char altura_str[20];
+        fgets(altura_str, 20, stdin);
+        sscanf(altura_str, "%d", &novo_registro.reg.altura);
+
+        insere_registo(novo_registro, lista, id);
+        printf("\nNovo registo adicionado com sucesso!\n");
+    } else {
+        printf("ID inválido. Por favor, insira um número válido.\n");
         limpar_buffer();
     }
 }
@@ -359,8 +396,8 @@ void running(PACIENTES informacao) {
                 case 4:
                     // Listar os pacientes com tensões máximas acima de um determinado valor
                     break;
-                case 5:
-                    // Listar toda a informação de um paciente
+                case 5: // Adicionar um novo Registo Clínico
+                    novo_registo(informacao);
                     break;
                 case 6:   // Listar toda a informação de um paciente
                     listar_informacao_paciente(informacao);
