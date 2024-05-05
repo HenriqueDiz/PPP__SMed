@@ -13,7 +13,7 @@ int verifica_numeros(const char* input) {  //implementar depois no loop, very ra
     return 1; // é um numero
 }
 
-/* FEITA PELO STOR
+/* FEITA PELO STOR 
 void limpar_buffer(char* array) { //very raw tbm
     int c;
     if (array[strlen(array)-1] != '\n')
@@ -40,8 +40,8 @@ void insere_registo(bloco_registo registo, PACIENTES lista_pacientes, int id) {
             paciente->pessoa.pessoa_registo->reg = registo.reg;
             paciente->pessoa.pessoa_registo->prox = NULL;
         } else {                                       // ou seja, não é o primeiro registo
-            REGISTOS novo_registo = (REGISTOS) malloc(sizeof(bloco_registo));
-            novo_registo->reg = registo.reg;      // EPA ISTO NAO FAZ SENTIDO NENHUM, mas funciona por alguma razao :3
+            REGISTOS novo_registo = (REGISTOS) malloc(sizeof(bloco_registo)); 
+            novo_registo->reg = registo.reg;
             novo_registo->prox = paciente->pessoa.pessoa_registo;
             paciente->pessoa.pessoa_registo = novo_registo;
         }
@@ -67,7 +67,7 @@ void load_registros(PACIENTES lista_pacientes) {
         insere_registo(lista_registo, lista_pacientes, id);
     }
     if (fclose(ficheiro) == EOF){
-        printf("Erro ao fechar o ficheiro registos.txt (Processo: Loading)\n");
+        printf("Erro ao fechar o ficheiro registos.txt (Processo: Loading)\n");        
         exit(1);
     }
 }
@@ -75,7 +75,7 @@ void load_registros(PACIENTES lista_pacientes) {
 void save_registros(PACIENTES lista_pacientes) {
     FILE* ficheiro = fopen("docs/registos.txt", "w");
     if (ficheiro == NULL) {
-        printf("Erro ao fechar o ficheiro registos.txt (Processo: Saving)\n");
+        printf("Erro ao fechar o ficheiro registos.txt (Processo: Saving)\n");   
         exit(1);
     }
     PACIENTES paciente = lista_pacientes;
@@ -93,7 +93,7 @@ void save_registros(PACIENTES lista_pacientes) {
         paciente = paciente->prox;
     }
     if (fclose(ficheiro) == EOF){
-        printf("Erro ao fechar o ficheiro registos.txt (Processo: Saving)\n");
+        printf("Erro ao fechar o ficheiro registos.txt (Processo: Saving)\n");        
         exit(1);
     }
 }
@@ -132,28 +132,11 @@ void insere_pacientes(PACIENTES lista, info novo) {
     }
 }
 
-void elimina_pacientes(PACIENTES lista, int id) {
-    PACIENTES ant = lista;
-    PACIENTES atual = lista->prox;
-    while (atual != NULL && atual->pessoa.id != id) {
-        ant = atual;
-        atual = atual->prox;
-    }
-    if (atual != NULL) {
-        ant->prox = atual->prox;
-        free(atual);
-        printf("Paciente %d eliminado!", id);
-    } else {
-        printf("Paciente com ID %d não encontrado\n", id);
-    }
-    limpar_buffer();
-}
-
 PACIENTES load_pacientes() {
     FILE *ficheiro = fopen("docs/doentes.txt", "r");
 
     if (ficheiro == NULL) {
-        printf("Erro ao abrir o ficheiro doentes.txt (Processo: Loading)\n");
+        printf("Erro ao abrir o ficheiro doentes.txt (Processo: Loading)\n");        
         exit(1);
     }
     PACIENTES lista_pacientes = cria_pacientes();
@@ -173,7 +156,7 @@ PACIENTES load_pacientes() {
         insere_pacientes(lista_pacientes, dados);
     }
     if (fclose(ficheiro) == EOF){
-        printf("Erro ao fechar o ficheiro doentes.txt (Processo: Loading)\n");
+        printf("Erro ao fechar o ficheiro doentes.txt (Processo: Loading)\n");       
         exit(1);
     }
     return lista_pacientes;
@@ -182,7 +165,7 @@ PACIENTES load_pacientes() {
 void save_pacientes(PACIENTES lista_pacientes) {
     FILE* ficheiro = fopen("docs/doentes.txt", "w");
     if (ficheiro == NULL) {
-        printf("Erro ao abrir o ficheiro doentes.txt (Processo: Saving)\n");
+        printf("Erro ao abrir o ficheiro doentes.txt (Processo: Saving)\n");       
         exit(1);
     }
 
@@ -197,13 +180,14 @@ void save_pacientes(PACIENTES lista_pacientes) {
         paciente = paciente->prox;
     }
     if (fclose(ficheiro) == EOF){
-        printf("Erro ao fechar o ficheiro doentes.txt (Processo: Saving)\n");
+        printf("Erro ao fechar o ficheiro doentes.txt (Processo: Saving)\n");       
         exit(1);
     }
 }
 
 /////////////////////////////// Funcionalidades da aplicação ///////////////////////////////
 
+// Case 1 : Adicionar novo paciente
 void novo_paciente(PACIENTES informacao) {
     info novo;
     printf("\nQual o nome do paciente ? ");
@@ -228,6 +212,28 @@ void novo_paciente(PACIENTES informacao) {
     insere_pacientes(informacao, novo);
 }
 
+// Case 2 : Eliminar Doente Existente
+void elimina_pacientes(PACIENTES lista) {
+    int id;
+    printf("ID do paciente p/ eliminar? ");
+    scanf("%d", &id);
+    PACIENTES ant = lista;
+    PACIENTES atual = lista->prox;
+    while (atual != NULL && atual->pessoa.id != id) {
+        ant = atual;
+        atual = atual->prox;
+    }
+    if (atual != NULL) {
+        ant->prox = atual->prox;
+        free(atual);
+        printf("Paciente %d eliminado!", id);
+    } else {
+        printf("Paciente com ID %d não encontrado\n", id);
+    }
+    limpar_buffer();
+}
+
+// Case 3 : Consultar Doentes (Ordem Alfabética)
 void imprime(PACIENTES lista){
     PACIENTES aux = lista->prox; // Salta o header
     while (aux) {
@@ -241,6 +247,41 @@ void imprime(PACIENTES lista){
     }
 }
 
+// Case 4 : Consultar Doentes - Tensão
+void listar_tensoes_acima(PACIENTES lista) { //nao esta a encontrar as tensoes, parece nao ter qq track das tensoes
+    int valor_limite;
+    printf("\nQual o valor limite da tensão máxima? ");
+    char input_limite[20]; //fazer isto como char para depoiis comparar como o prof aconselhou
+    fgets(input_limite, 20, stdin);
+    if (verifica_numeros(input_limite)) {
+        sscanf(input_limite, "%d", &valor_limite);
+        PACIENTES paciente = lista->prox; // ignorar header
+        int encontrados = 0;
+        while (paciente != NULL) {
+            REGISTOS registro = paciente->pessoa.pessoa_registo;
+            while (registro != NULL) {
+                if (registro->reg.tensao_max > valor_limite) {
+                    encontrados = 1;
+                    printf("\nPaciente ID: %d\n", paciente->pessoa.id);
+                    printf("Tensão Máxima: %d\n", registro->reg.tensao_max);
+                    printf("Tensão Mínima: %d\n", registro->reg.tensao_min);
+                    printf("Peso: %d\n", registro->reg.peso);
+                    printf("Altura: %d\n", registro->reg.altura);
+                }
+                registro = registro->prox;
+            }
+            paciente = paciente->prox;
+        }
+        if (!encontrados) {
+            printf("Nenhum paciente com tensão máxima acima de %d encontrado.\n", valor_limite);
+        }
+    } else {
+        printf("Valor limite inválido. Por favor, insira um número válido.\n");  //estamos tbm aqui neste
+    }
+    limpar_buffer();
+}
+
+// Case 5 : Novo Registo Clínico 
 void novo_registo(PACIENTES lista) {
     int id;
     printf("\nQual o ID do paciente para adicionar um novo registo? ");
@@ -277,39 +318,7 @@ void novo_registo(PACIENTES lista) {
     }
 }
 
-void listar_tensoes_acima(PACIENTES lista) { //nao esta a encontrar as tensoes, parece nao ter qq track das tensoes
-    int valor_limite;
-    printf("\nQual o valor limite da tensão máxima? ");
-    char input_limite[20]; //fazer isto como char para depoiis comparar como o prof aconselhou
-    fgets(input_limite, 20, stdin);
-    if (verifica_numeros(input_limite)) {
-        sscanf(input_limite, "%d", &valor_limite);
-        PACIENTES paciente = lista->prox; // ignorar header
-        int encontrados = 0;
-        while (paciente != NULL) {
-            REGISTOS registro = paciente->pessoa.pessoa_registo;
-            while (registro != NULL) {
-                if (registro->reg.tensao_max > valor_limite) {
-                    encontrados = 1;
-                    printf("\nPaciente ID: %d\n", paciente->pessoa.id);
-                    printf("Tensão Máxima: %d\n", registro->reg.tensao_max);
-                    printf("Tensão Mínima: %d\n", registro->reg.tensao_min);
-                    printf("Peso: %d\n", registro->reg.peso);
-                    printf("Altura: %d\n", registro->reg.altura);
-                }
-                registro = registro->prox;
-            }
-            paciente = paciente->prox;
-        }
-        if (!encontrados) {
-            printf("Nenhum paciente com tensão máxima acima de %d encontrado.\n", valor_limite);
-        }
-    } else {
-        printf("Valor limite inválido. Por favor, insira um número válido.\n");  //estamos tbm aqui neste
-    }
-    limpar_buffer();
-}
-
+// Case 6 : Listar toda a informação de um paciente
 void listar_informacao_paciente(PACIENTES lista) { //nao esta a encontrar o id
     int id = 0;
     printf("\nQual o ID do paciente? ");
@@ -358,30 +367,27 @@ void running(PACIENTES informacao) {
         printf("///   5. Novo Registo Clínico                    ///\n");
         printf("///   6. Listar toda a informação de um paciente ///\n");
         printf("///   7. Sair                                    ///\n");
-        printf("////// [Hospital da Universidade de Coimbra]  //////\n");
+        printf("////// [Hospital da Universidade de Coimbra]  //////\n");       
         char input[100];
         printf("\nQual a operação pretendida? ");
         fgets(input, 100, stdin);
         if (sscanf(input, "%d", &choice)!= 1 || choice < 1 || choice > 7 || input[1] != '\n')
             printf("\nInput inválido. Por favor, introduza um número entre 1 e 7.\n");
-        else {
+        else { 
             switch (choice) {
                 case 1:   // Introduzir dados de um novo paciente
                     novo_paciente(informacao);
                     break;
                 case 2:   // Eliminar um paciente existente
-                    int id;
-                    printf("ID do paciente p/ eliminar? ");
-                    scanf("%d", &id);
-                    elimina_pacientes(informacao, id);
+                    elimina_pacientes(informacao);
                     break;
                 case 3:   // Listar todos os pacientes
                     imprime(informacao);
                     break;
-                case 4:
-                    // Listar os pacientes com tensões máximas acima de um determinado valor
+                case 4:   // Listar os pacientes com tensões máximas acima de um determinado valor
+                    listar_tensoes_acima(informacao);
                     break;
-                case 5: // Adicionar um novo Registo Clínico
+                case 5:   // Adicionar um novo Registo Clínico
                     novo_registo(informacao);
                     break;
                 case 6:   // Listar toda a informação de um paciente
