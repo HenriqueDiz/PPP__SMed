@@ -1,4 +1,5 @@
-#include "estruturas.h"
+#include "../lib/estruturas.h"
+#include "../lib/declaracoes.h"
 
 int main() {
     PACIENTES lista = load_pacientes(); // Fazemos load da informação dos pacientes se existir, caso contrário criamos a lista e o ficheiro
