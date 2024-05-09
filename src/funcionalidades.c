@@ -68,11 +68,12 @@ void imprime(PACIENTES lista){
 }
 
 // Case 4 : Consultar Doentes - Tensão
-void listar_tensoes_acima(PACIENTES lista) { //nao esta a encontrar as tensoes, parece nao ter qq track das tensoes
+void listar_tensoes_acima(PACIENTES lista) {
     int valor_limite;
     printf("\nQual o valor limite da tensão máxima? ");
-    char input_limite[20]; //fazer isto como char para depoiis comparar como o prof aconselhou
-    fgets(input_limite, 20, stdin);
+    char input_limite[20];
+    fgets(input_limite, sizeof(input_limite), stdin);
+    input_limite[strcspn(input_limite, "\n")] = '\0';     // remover o char da nova linha
     if (verifica_numeros(input_limite)) {
         sscanf(input_limite, "%d", &valor_limite);
         PACIENTES paciente = lista->prox; // ignorar header
@@ -96,7 +97,7 @@ void listar_tensoes_acima(PACIENTES lista) { //nao esta a encontrar as tensoes, 
             printf("Nenhum paciente com tensão máxima acima de %d encontrado.\n", valor_limite);
         }
     } else {
-        printf("Valor limite inválido. Por favor, insira um número válido.\n");  //estamos tbm aqui neste
+        printf("Valor limite inválido. Por favor, insira um número válido.\n");
     }
     limpar_buffer();
 }
