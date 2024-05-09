@@ -72,7 +72,7 @@ void listar_tensoes_acima(PACIENTES lista) {
     int valor_limite;
     printf("\nQual o valor limite da tensão máxima? ");
     char input_limite[20];
-    fgets(input_limite, sizeof(input_limite), stdin);
+    fgets(input_limite, 20, stdin);
     input_limite[strcspn(input_limite, "\n")] = '\0';     // remover o char da nova linha
     if (verifica_numeros(input_limite)) {
         sscanf(input_limite, "%d", &valor_limite);
