@@ -5,6 +5,7 @@
 
 void limpar_buffer();
 int verifica_numeros(const char* input);
+PACIENTES find_id(PACIENTES lista,int id);
 
 void running(PACIENTES informacao);
 

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "../lib/estruturas.h"
 
 /////////////////////////////// Funções Auxiliares ///////////////////////////////
 
@@ -23,4 +24,12 @@ void limpar_buffer(char* array) { //very raw tbm
 void limpar_buffer() { //very raw tbm
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
+}
+
+PACIENTES find_id(PACIENTES lista,int id){
+    PACIENTES paciente = lista->prox; // ignorar header
+    while (paciente != NULL && paciente->pessoa.id != id) {
+        paciente = paciente->prox;
+    }
+    return paciente;
 }

@@ -28,8 +28,11 @@ void novo_paciente(PACIENTES informacao) {
     fgets(novo.email, 40, stdin);
     novo.email[strcspn(novo.email, "\n")] = '\0';
     novo.id = ++informacao->pessoa.id;  // aumentamos o número de pacientes no header
+    while(find_id(informacao,novo.id) != NULL) // caso o id já exista, continuamos a incrementar até conseguirmos um id 
+        novo.id++;
     novo.pessoa_registo =  NULL;
     insere_pacientes(informacao, novo);
+    save_pacientes(informacao); // Guardamos a informação no ficheiro dos pacientes
 }
 
 // Case 2 : Eliminar Doente Existente
@@ -37,8 +40,7 @@ void elimina_pacientes(PACIENTES lista) {
     int id;
     printf("ID do paciente p/ eliminar? ");
     scanf("%d", &id);
-    PACIENTES ant = lista;
-    PACIENTES atual = lista->prox;
+    PACIENTES ant = lista, atual = lista->prox;
     while (atual != NULL && atual->pessoa.id != id) {
         ant = atual;
         atual = atual->prox;
@@ -51,6 +53,7 @@ void elimina_pacientes(PACIENTES lista) {
         printf("Paciente com ID %d não encontrado\n", id);
     }
     limpar_buffer();
+    save_pacientes(lista); // Guardamos a informação no ficheiro dos pacientes
 }
 
 // Case 3 : Consultar Doentes (Ordem Alfabética)
@@ -108,7 +111,8 @@ void novo_registo(PACIENTES lista) {
     printf("\nQual o ID do paciente para adicionar um novo registo? ");
     scanf("%d", &id);
     limpar_buffer(); // Clear the input buffer
-    if (id) {
+    PACIENTES paciente = find_id(lista,id);
+    if (paciente != NULL) {
         bloco_registo novo_registro;
         printf("Qual a data do registo (Formato : dia / mes / ano)? ");
         char data_registo_str[20];
@@ -132,10 +136,10 @@ void novo_registo(PACIENTES lista) {
         sscanf(altura_str, "%d", &novo_registro.reg.altura);
 
         insere_registo(novo_registro, lista, id);
+        save_registros(lista); // Guardamos a informação no ficheiro dos registos
         printf("\nNovo registo adicionado com sucesso!\n");
     } else {
-        printf("ID inválido. Por favor, insira um número válido.\n");
-        limpar_buffer();
+        printf("ID inválido. Por favor, insira um ID válido.\n");
     }
 }
 
@@ -145,10 +149,7 @@ void listar_informacao_paciente(PACIENTES lista) { //nao esta a encontrar o id
     printf("\nQual o ID do paciente? ");
     scanf("%d", &id); // MUDEI SO PARA TESTAR O CODIGO ( precisava de ver se a parte dos ficheiros dos registos estava a ser bem feita)
     if (id) {
-        PACIENTES paciente = lista->prox; // ignorar header
-        while (paciente != NULL && paciente->pessoa.id != id) {
-            paciente = paciente->prox;
-        }
+        PACIENTES paciente = find_id(lista,id);
         if (paciente != NULL) {
             printf("\nInformação do Paciente ID: %d\n\n", paciente->pessoa.id);
             printf("Nome: %s\n", paciente->pessoa.nome);
@@ -167,7 +168,7 @@ void listar_informacao_paciente(PACIENTES lista) { //nao esta a encontrar o id
                 registro = registro->prox;
             }
         } else {
-            printf("Paciente com ID %d não encontrado.\n", id);
+            printf("\nPaciente com ID %d não encontrado.\n", id);
         }
     } else {
         printf("ID inválido. Por favor, insira um número válido.\n");
