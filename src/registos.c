@@ -28,7 +28,7 @@ void load_registros(PACIENTES lista_pacientes) {
     FILE* ficheiro = fopen("docs/registos.txt", "r");
     if (ficheiro == NULL) {
         printf("Erro ao abrir o ficheiro registos.txt (Processo: Loading)\n");
-        exit(1);
+        ficheiro = fopen("docs/registos.txt", "w");
     }
     int id;
     while (fscanf(ficheiro, "%d", &id) == 1) {

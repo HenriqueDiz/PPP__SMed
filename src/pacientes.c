@@ -41,8 +41,8 @@ PACIENTES load_pacientes() {
     FILE *ficheiro = fopen("docs/doentes.txt", "r");
 
     if (ficheiro == NULL) {
-        printf("Erro ao abrir o ficheiro doentes.txt (Processo: Loading)\n");        
-        exit(1);
+        printf("\nFicheiro doentes.txt não encontrado, sendo criado novo (Processo: Loading)\n");        
+        ficheiro = fopen("docs/doentes.txt", "w");
     }
     PACIENTES lista_pacientes = cria_pacientes();
     info dados;
