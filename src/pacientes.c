@@ -39,19 +39,17 @@ void insere_pacientes(PACIENTES lista, info novo) {
 
 PACIENTES load_pacientes() {
     FILE *ficheiro = fopen("docs/doentes.txt", "r");
-
     if (ficheiro == NULL) {
         printf("\nFicheiro doentes.txt não encontrado, sendo criado novo (Processo: Loading)\n");        
         ficheiro = fopen("docs/doentes.txt", "w");
     }
     PACIENTES lista_pacientes = cria_pacientes();
     info dados;
-
     while (fscanf(ficheiro, "%d", &dados.id) == 1) {
         fscanf(ficheiro, "%d", &dados.id);
         fgets(dados.nome, 40, ficheiro);
         dados.nome[strcspn(dados.nome, "\n")] = '\0';
-        dados.nome[strcspn(dados.nome, "\r")] = '\0';
+        dados.nome[strcspn(dados.nome, "\r")] = '\0'; // para Mac ou Linux
         fscanf(ficheiro, "%d/%d/%d", &dados.data_nascimento.dia, &dados.data_nascimento.mes, &dados.data_nascimento.ano);
         fscanf(ficheiro, "%s", dados.cartao_de_cidadao);
         fscanf(ficheiro, "%d", &dados.telefone);
@@ -73,7 +71,6 @@ void save_pacientes(PACIENTES lista_pacientes) {
         printf("Erro ao abrir o ficheiro doentes.txt (Processo: Saving)\n");       
         exit(1);
     }
-
     PACIENTES paciente = lista_pacientes->prox; // Saltamos o Header
     while (paciente != NULL) {
         fprintf(ficheiro, "%d\n", paciente->pessoa.id);

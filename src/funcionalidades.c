@@ -79,9 +79,6 @@ void listar_tensoes_acima(PACIENTES lista) {
                 encontrados = 1;
                 printf("\nPaciente ID: %d\n", paciente->pessoa.id);
                 printf("Tensão Máxima: %d\n", registro->reg.tensao_max);
-                printf("Tensão Mínima: %d\n", registro->reg.tensao_min);
-                printf("Peso: %d\n", registro->reg.peso);
-                printf("Altura: %d\n", registro->reg.altura);
             }
             registro = registro->prox;
         }
@@ -133,6 +130,8 @@ void listar_informacao_paciente(PACIENTES lista) {
         printf("Email: %s\n", paciente->pessoa.email);
         printf("\nRegistos Médicos:\n");
         REGISTOS registro = paciente->pessoa.pessoa_registo;
+        if (registro == NULL)
+            printf("\nPaciente com ID %d não tem Registos Clínicos \n", id);
         while (registro != NULL) {
             printf("\nData do Registo: %d/%d/%d\n", registro->reg.data_registo.dia, registro->reg.data_registo.mes, registro->reg.data_registo.ano);
             printf("Tensão Máxima: %d\n", registro->reg.tensao_max);

@@ -13,6 +13,7 @@ typedef struct{
 // Nódulo que guarda um registo de um paciente
 typedef struct bloco_registo{
     registo reg;
+    //struct bloco_registo *prox_tensao;
     struct bloco_registo* prox;
 } bloco_registo;
 

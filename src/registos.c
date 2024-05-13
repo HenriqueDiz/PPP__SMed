@@ -1,13 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "../lib/declaracoes.h"
 #include "../lib/estruturas.h"
 
 /////////////////////////////// Ficheiro Registos ///////////////////////////////
 
 void insere_registo(bloco_registo registo, PACIENTES lista_pacientes, int id) {
-    PACIENTES paciente = lista_pacientes;
-    while (paciente != NULL && paciente->pessoa.id != id)
-        paciente = paciente->prox;
+    PACIENTES paciente = find_id(lista_pacientes,id);
     if (paciente != NULL) {
         if (paciente->pessoa.pessoa_registo == NULL) { // ou seja, é o primeiro registo
             paciente->pessoa.pessoa_registo = (REGISTOS) malloc(sizeof(bloco_registo));
@@ -27,7 +26,7 @@ void insere_registo(bloco_registo registo, PACIENTES lista_pacientes, int id) {
 void load_registros(PACIENTES lista_pacientes) {
     FILE* ficheiro = fopen("docs/registos.txt", "r");
     if (ficheiro == NULL) {
-        printf("Erro ao abrir o ficheiro registos.txt (Processo: Loading)\n");
+        printf("Ficheiro registos.txt não encontrado, sendo criado novo (Processo: Loading)\n"); 
         ficheiro = fopen("docs/registos.txt", "w");
     }
     int id;
