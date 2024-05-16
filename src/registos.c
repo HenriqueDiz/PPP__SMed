@@ -18,9 +18,8 @@ void insere_registo(bloco_registo registo, PACIENTES lista_pacientes, int id) {
             novo_registo->prox = paciente->pessoa.pessoa_registo;
             paciente->pessoa.pessoa_registo = novo_registo;
         }
-    } else {
+    } else 
         printf("Paciente com ID %d não encontrado\n", id);
-    }
 }
 
 void load_registros(PACIENTES lista_pacientes) {

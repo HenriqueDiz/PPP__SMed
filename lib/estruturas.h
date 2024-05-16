@@ -23,7 +23,7 @@ typedef bloco_registo* REGISTOS;
 // Estrutura que guarda as informações de um paciente (informações pessoais e registos)
 typedef struct{
     data data_nascimento;
-    char cartao_de_cidadao[16], email[40], nome[40];
+    char cartao_de_cidadao[15], email[51], nome[51];
     int telefone, id;
     REGISTOS pessoa_registo;
 } info;

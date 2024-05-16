@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include "../lib/estruturas.h"
-#include "ctype.h"  //para a cena do "isalpha"
-#define TAM 11
-#define TAM_STR 50
+#define TAM_INT 12
+#define TAM_STR 52
 
 /////////////////////////////// Funções Auxiliares ///////////////////////////////
 
@@ -16,54 +16,37 @@ int verifica_numeros(const char* input) {
     return 1; // É um Número
 }
 
-// Função para verificar se é apenas por letras
-int verifica_letras(const char *str) {
+// Função para verificar se é uma string
+int verifica_string(const char *str) {
     for (int i = 0; str[i] != '\0'; i++) {
-        if (!isalpha(str[i]) && str[i] != ' ') {
-            return 0; // não é uma letra nem espaço
-        }
+        if (!isalpha(str[i]) && str[i] != ' ')
+            return 0; // Não é só letras e espaços
     }
-    return 1; // É uma letra ou espaço (ambos funceminam)
+    return 1; // É só letras e espaços
 }
 
-// Função para verificar se email (@ e . obrigadtorios)
+// Função para verificar se email ('@' e '.' obrigatórios)
 int verifica_email(const char *str) {
-    int tem_arroba = 0;
-    int tem_ponto = 0;
-
+    int tem_arroba = 0, tem_ponto = 0;
     for (int i = 0; str[i] != '\0'; i++) {
-        if (str[i] == '@') {
+        if (str[i] == '@')
             tem_arroba = 1;
-        } else if (str[i] == '.') {
+        else if (str[i] == '.') 
             tem_ponto = 1;
-        }
     }
-
     return (tem_arroba && tem_ponto);
 }
 
-// Função para verificar se tem formato dd/mm/aaaa
-int verifica_data(const char *str) {
-    int dia, mes, ano;
-    if (sscanf(str, "%d/%d/%d", &dia, &mes, &ano) == 3) { //verificar se estão todas completas
-        if (dia >= 1 && dia <= 31 && mes >= 1 && mes <= 12 && ano >= 1000 && ano <= 9999) {
-            return 1; // data válida
-        }
-    }
-    return 0; // data inválida
-}
-
-// Função para verificar se cc tem formato 12345678-1-23
+// Função para verificar se CC tem formato 12345678-9-AB1
 int verifica_cartao_cidadao(const char *str) {
-    int n1, n2, n3;
-    if (sscanf(str, "%8d-%1d-%2d", &n1, &n2, &n3) == 3) {
-        return 1; //  cc válido
+    int n1, n2;
+    char c1, c2;
+    if (sscanf(str, "%8d-%1d-%1c%1c", &n1, &n2, &c1, &c2) == 4) {
+        if (isupper(c1) && isupper(c2))
+            return 1; // CC válido
     }
-    return 0; // cc inválido
+    return 0; // CC inválido
 }
-
-
-
 
 // Função para Limpar o Buffer
 void limpar_buffer() {
@@ -71,79 +54,85 @@ void limpar_buffer() {
     while ((c = getchar()) != '\n' && c != EOF);
 }
 
+
+
 // Função encontrar o nódulo do paciente pelo ID
 PACIENTES find_id(PACIENTES lista,int id){
     PACIENTES paciente = lista->prox; // Ignoramos o Header
-    while (paciente != NULL && paciente->pessoa.id != id) {
+    while (paciente != NULL && paciente->pessoa.id != id)
         paciente = paciente->prox;
-    }
     return paciente;
 }
 
 
 
-
-
-// Função para o input de números
+// Função para o input de Números
 int input_numeros() {
     int num;
-    char input[TAM];
+    char input[TAM_INT];
     while (1) {
-        fgets(input, TAM, stdin);
+        fgets(input, TAM_INT, stdin);
         if (input[strlen(input) - 1] == '\n') {
             input[strcspn(input, "\n")] = '\0';   // Removemos a primeira occorência de '\n'
             if (verifica_numeros(input)) {
                 sscanf(input, "%d", &num);
                 return num;
-            } else {
-                printf("Input inválido. Por favor, insira um número válido: ");
-            }
+            } else
+                printf("Número inválido. Por favor, insira dígitos válidos: ");
         } else {
-            printf("Input inválido. Por favor, insira um número dentro do tamanho do Buffer ( %d dígitos no Máximo ) : ",TAM - 2);
+            printf("Número inválido. Por favor, insira um número dentro do tamanho do Buffer ( %d dígitos no Máximo ) : ", TAM_INT - 2);
             limpar_buffer();
         }
     }
 }
 
-// Função principal para input de strings -- recebe a flag
+// Função para o input de Datas
+data input_data() {
+    data temp;
+    char input[TAM_STR];
+    while (1) {
+        fgets(input, TAM_STR, stdin);
+        if (input[strlen(input) - 1] == '\n') {
+            input[strcspn(input, "\n")] = '\0';   // Removemos a primeira occorência de '\n'
+            if (sscanf(input, "%d/%d/%d", &temp.dia, &temp.mes, &temp.ano) == 3) { // Verificar se estão todas completas
+                if (temp.dia >= 1 && temp.dia <= 31 && temp.mes >= 1 && temp.mes <= 12 && temp.ano >= 1000 && temp.ano <= 9999)
+                    return temp; // Data Válida
+                else
+                    printf("Data inválida. Por favor, insira números válidos para a Data : ");
+            } 
+            else printf("Data inválida. Por favor, preencha os 3 campos da Data : ");
+        } else{
+            printf("Data inválida. Por favor, insira uma Data válida : ");
+            limpar_buffer();            
+        }
+    }
+}
+
+// Função para o input de Strings (Nome, Email, CC)
 char* input_strings(int flag) {
     char input[TAM_STR];
     while (1) {
         fgets(input, TAM_STR, stdin);
-        input[strcspn(input, "\n")] = '\0'; // remover quebra de linha
-
-        switch(flag) {
-            case 0: // nome
-                if (verifica_letras(input)) {
-                    return strdup(input);
-                } else {
-                    printf("Insira um nome válido!\n");
-                }
-                break;
-            case 1: // email
-                if (verifica_email(input)) {
-                    return strdup(input);
-                } else {
-                    printf("Insira um email válido.\n");
-                }
-                break;
-            case 2: // data
-                if (verifica_data(input)) {
-                    return strdup(input);
-                } else {
-                    printf("Insira uma data válida (dd/mm/aaaa).\n");
-                }
-                break;
-            case 3: // cc
-                if (verifica_cartao_cidadao(input)) {
-                    return strdup(input);
-                } else {
-                    printf("Insira um número de cartão de cidadão válido (12345678-1-23).\n");
-                }
-                break;
-            default:
-                printf("Flag Incorreta.\n"); //debug
-                break;
+        if (input[strlen(input) - 1] == '\n') {
+            input[strcspn(input, "\n")] = '\0';   // Removemos a primeira occorência de '\n'
+            switch(flag) {
+                case 0:   // Nome
+                    if (verifica_string(input)) return strdup(input);
+                    else printf("Nome inválido. Por favor, insira um Nome válido : ");
+                    break;
+                case 1:   // Email
+                    if (verifica_email(input)) return strdup(input);
+                    else printf("Email inválido. Por favor, insira um Email válido : ");
+                    break;
+                case 2:   // CC
+                    if (verifica_cartao_cidadao(input)) return strdup(input);
+                    else printf("CC inválido. Por favor, insira um CC válido (Formato: 12345678-9-AB1) : ");
+                    break;
+            }
+        }
+        else{
+            printf("Input inválido. Por favor, insira um Input dentro do tamanho do Buffer ( %d Caracteres no Máximo ) : ", TAM_STR - 2);
+            limpar_buffer();            
         }
     }
 }

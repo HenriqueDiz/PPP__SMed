@@ -1,36 +1,18 @@
-4
-Alcino
-7/7/199
-345tgb
-987654456
-alcino@alci.pt
-1
-Ana Maria Silva
-30/10/2000
-04236786-7-ZX2
-939786543
-anaSilva@dei.uc.pt
 3
-Eduardo Diz
-11/11/2000
-04236786-7-ZX3
-987345908
-eduardo@eduardo.pt
-7
-Joao Lopes
-5/7/2000
-123435390
-916666666
-lopes@gmail.pt
-6
-Patricia Lopes
-7/7/1999
-12345-z
-987987789
-patricia@gmail.pt
+Eduardo
+7/8/2011
+1-1-AC1
+1
+eduaro@deu.pt
+1
+Henrique Diz
+4/4/2000
+12345678-9-AB1
+987897890
+Henrique@gmail.pt
 2
-Paulo Silva
-3/10/2002
-04936886-7-ZX2
-960786543
-pSilva@dei.uc.pt
+Tomas
+7/7/2000
+123-1-AB1
+987654321
+tomas@gmail.pt

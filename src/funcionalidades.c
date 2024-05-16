@@ -10,26 +10,21 @@
 void novo_paciente(PACIENTES informacao) {
     info novo;
     printf("\nQual o nome do paciente ? ");
-    fgets(novo.nome, 40, stdin);
-    novo.nome[strcspn(novo.nome, "\n")] = '\0';
+    strcpy(novo.nome,input_strings(0));
     printf("Qual a data de nascimento do paciente ? (Formato : dia / mes / ano) ");
-    char data_nascimento_str[20];
-    fgets(data_nascimento_str, 20, stdin);
-    sscanf(data_nascimento_str, "%d / %d / %d", &novo.data_nascimento.dia, &novo.data_nascimento.mes, &novo.data_nascimento.ano);
-    printf("Qual o cartão de cidadão do paciente ? ");
-    fgets(novo.cartao_de_cidadao, 16, stdin);
-    novo.cartao_de_cidadao[strcspn(novo.cartao_de_cidadao, "\n")] = '\0';
+    novo.data_nascimento = input_data();
+    printf("Qual o cartão de cidadão do paciente ? (Formato: 12345678-9-AB1) ");
+    strcpy(novo.cartao_de_cidadao,input_strings(2));
     printf("Qual o telefone do paciente ? ");
     novo.telefone = input_numeros();
     printf("Qual o email do paciente ? ");
-    fgets(novo.email, 40, stdin);
-    novo.email[strcspn(novo.email, "\n")] = '\0';
+    strcpy(novo.email,input_strings(1));
     informacao->pessoa.id++;  // Aumentamos o número de pacientes no header
     novo.id = 1;
-    while(find_id(informacao,novo.id) != NULL) // Caso o id já exista, continuamos a incrementar até conseguirmos um ID único 
+    while(find_id(informacao,novo.id) != NULL) // Caso o id já exista, continuamos a incrementar até conseguirmos um ID único
         novo.id++;
     novo.pessoa_registo =  NULL;
-    insere_pacientes(informacao, novo);
+    insere_pacientes(informacao, novo); // Inserimos o novo paciente na estrutura
     save_pacientes(informacao); // Guardamos a informação no ficheiro dos pacientes
     printf("\nNovo paciente adicionado!\n");
 }
@@ -47,16 +42,16 @@ void elimina_pacientes(PACIENTES lista) {
         ant->prox = atual->prox;
         free(atual);
         printf("\nPaciente com ID %d eliminado!", id);
-    } else {
+    } else
         printf("\nPaciente com ID %d não encontrado\n", id);
-    }
     save_pacientes(lista); // Guardamos a informação no ficheiro dos pacientes
 }
 
 // Case 3 : Consultar Doentes (Ordem Alfabética)
 void imprime(PACIENTES lista){
+    size_t size = lista->pessoa.id; // Vamos buscar ao Header o tamanho da Lista
     PACIENTES aux = lista->prox; // Ignoramos o Header
-    while (aux) {
+    for (size_t i = 0; i < size; i++){
         printf("ID: %d\n", aux->pessoa.id);
         printf("Nome: %s\n", aux->pessoa.nome);
         printf("Data de Nascimento: %d/%d/%d\n", aux->pessoa.data_nascimento.dia, aux->pessoa.data_nascimento.mes, aux->pessoa.data_nascimento.ano);
@@ -71,8 +66,9 @@ void imprime(PACIENTES lista){
 void listar_tensoes_acima(PACIENTES lista) {
     printf("\nQual o valor limite da tensão máxima? ");
     int limite = input_numeros(), encontrados = 0;
+    size_t size = lista->pessoa.id; // Vamos buscar ao Header o tamanho da Lista
     PACIENTES paciente = lista->prox; // Ignoramos o Header
-    while (paciente != NULL) {
+    for (size_t i = 0; i < size; i++) {
         REGISTOS registro = paciente->pessoa.pessoa_registo;
         while (registro != NULL) {
             if (registro->reg.tensao_max > limite) {
@@ -95,20 +91,17 @@ void novo_registo(PACIENTES lista) {
     PACIENTES paciente = find_id(lista,id);
     if (paciente != NULL) {
         bloco_registo novo_registro;
-        printf("Qual a data do registo (Formato : dia / mes / ano)? ");
-        char data_registo_str[20];
-        fgets(data_registo_str, 20, stdin);
-        sscanf(data_registo_str, "%d / %d / %d", &novo_registro.reg.data_registo.dia, &novo_registro.reg.data_registo.mes, &novo_registro.reg.data_registo.ano);
-        printf("Qual a tensão máxima? ");
+        printf("Qual a data do registo (Formato : dia / mes / ano) ? ");
+        novo_registro.reg.data_registo = input_data();
+        printf("Qual a tensão máxima ? ");
         novo_registro.reg.tensao_max = input_numeros();
-        printf("Qual a tensão mínima? ");
+        printf("Qual a tensão mínima ? ");
         novo_registro.reg.tensao_min = input_numeros();
-        printf("Qual o peso? ");
+        printf("Qual o peso ? ");
         novo_registro.reg.peso = input_numeros();
-        printf("Qual a altura? ");
+        printf("Qual a altura ? ");
         novo_registro.reg.altura = input_numeros();
-
-        insere_registo(novo_registro, lista, id);
+        insere_registo(novo_registro, lista, id); // Inserimos o novo registo no nódulo do paciente
         save_registros(lista); // Guardamos a informação no ficheiro dos registos
         printf("\nNovo registo adicionado!\n");
     } else {
