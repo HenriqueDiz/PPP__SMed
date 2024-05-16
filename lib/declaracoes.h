@@ -18,6 +18,6 @@ void insere_pacientes(PACIENTES lista, info novo);
 
 void load_registros(PACIENTES lista_pacientes);
 void save_registros(PACIENTES lista_pacientes);
-void insere_registo(bloco_registo registo, PACIENTES lista_pacientes, int id);
+void insere_registo(registo novo, PACIENTES lista, int id);
 
 #endif

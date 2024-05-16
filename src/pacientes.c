@@ -7,7 +7,7 @@
 
 PACIENTES cria_pacientes(){
     PACIENTES aux;
-    info novo = {{1,1,2000},"11111111-1-AB1","header@header.pt","Header", 0, 0, NULL};  // Define a informações do Header e iremos usar o 'id' para armazenar o número de pacientes
+    info novo = {{1,1,2000},"11111111-1-AB1","header@header.pt","Header", 0, 0, NULL};  // Definimos a informações do Header e iremos usar o 'id' para armazenar o número de pacientes
     aux = (PACIENTES) malloc (sizeof(bloco));
     if (aux != NULL) {
         aux->pessoa = novo;
@@ -16,7 +16,7 @@ PACIENTES cria_pacientes(){
     return aux;
 }
 
-void procura(PACIENTES lista, char* chave_nome, PACIENTES* ant, PACIENTES* actual){
+void procura_paciente(PACIENTES lista, char* chave_nome, PACIENTES* ant, PACIENTES* actual){
     *ant = lista; *actual = lista->prox;
     while ((*actual) != NULL && strcasecmp((*actual)->pessoa.nome, chave_nome) < 0) {
         *ant = *actual;
@@ -31,7 +31,7 @@ void insere_pacientes(PACIENTES lista, info novo) {
     no = (PACIENTES) malloc (sizeof(bloco));
     if (no != NULL) {
         no->pessoa = novo;
-        procura(lista, novo.nome, &ant, &inutil);
+        procura_paciente(lista, novo.nome, &ant, &inutil);
         no->prox = ant->prox;
         ant->prox = no;
     }

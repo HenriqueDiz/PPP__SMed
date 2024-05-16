@@ -66,22 +66,54 @@ void imprime(PACIENTES lista){
 void listar_tensoes_acima(PACIENTES lista) {
     printf("\nQual o valor limite da tensão máxima? ");
     int limite = input_numeros(), encontrados = 0;
+    REGISTOS temp = NULL; // Criamos uma lista temporária
     size_t size = lista->pessoa.id; // Vamos buscar ao Header o tamanho da Lista
-    PACIENTES paciente = lista->prox; // Ignoramos o Header
-    for (size_t i = 0; i < size; i++) {
+    PACIENTES paciente = lista->prox; // Saltamos o Header
+    // Vamos percorrer todas as listas de registos
+    for (size_t i = 0; i < size; i++){
         REGISTOS registro = paciente->pessoa.pessoa_registo;
-        while (registro != NULL) {
+        while (registro!= NULL) {
             if (registro->reg.tensao_max > limite) {
                 encontrados = 1;
-                printf("\nPaciente ID: %d\n", paciente->pessoa.id);
-                printf("Tensão Máxima: %d\n", registro->reg.tensao_max);
+                REGISTOS new_node = (REGISTOS) malloc(sizeof(bloco_registo));
+                new_node->reg = registro->reg;
+                new_node->reg.tensao_min = paciente->pessoa.id; // Usamos a tensao mínima para armazenar o ID na lista auxiliar
+                new_node->prox = temp;
+                temp = new_node;
             }
             registro = registro->prox;
         }
         paciente = paciente->prox;
     }
-    if (!encontrados)
-        printf("Nenhum paciente com tensão máxima acima de %d encontrado.\n", limite);
+    // Ordenamos todas as Tensões independentemente do ID do paciente
+    REGISTOS current = temp;
+    REGISTOS next = NULL;
+    while (current!= NULL) {
+        next = current->prox;
+        while (next!= NULL) {
+            if (current->reg.tensao_max < next->reg.tensao_max) {
+                registo temp = current->reg;
+                current->reg = next->reg;
+                next->reg = temp;
+            }
+            next = next->prox;
+        }
+        current = current->prox;
+    }
+    // Imprimimos a Lista
+    current = temp;
+    while (current!= NULL) {
+        printf("\nTensão Máxima: %d do paciente com ID: %d", current->reg.tensao_max, current->reg.tensao_min);
+        current = current->prox;
+    }
+    // Libertamos a memória
+    while (temp!= NULL) {
+        REGISTOS next = temp->prox;
+        free(temp);
+        temp = next;
+    }
+    if (!encontrados) printf("\nNenhum paciente com tensão máxima acima de %d encontrado.\n", limite);
+    else printf("\n");
 }
 
 // Case 5 : Novo Registo Clínico 
@@ -90,18 +122,18 @@ void novo_registo(PACIENTES lista) {
     int id = input_numeros();
     PACIENTES paciente = find_id(lista,id);
     if (paciente != NULL) {
-        bloco_registo novo_registro;
+        registo novo;
         printf("Qual a data do registo (Formato : dia / mes / ano) ? ");
-        novo_registro.reg.data_registo = input_data();
+        novo.data_registo = input_data();
         printf("Qual a tensão máxima ? ");
-        novo_registro.reg.tensao_max = input_numeros();
+        novo.tensao_max = input_numeros();
         printf("Qual a tensão mínima ? ");
-        novo_registro.reg.tensao_min = input_numeros();
+        novo.tensao_min = input_numeros();
         printf("Qual o peso ? ");
-        novo_registro.reg.peso = input_numeros();
+        novo.peso = input_numeros();
         printf("Qual a altura ? ");
-        novo_registro.reg.altura = input_numeros();
-        insere_registo(novo_registro, lista, id); // Inserimos o novo registo no nódulo do paciente
+        novo.altura = input_numeros();
+        insere_registo(novo, lista, id); // Inserimos o novo registo no nódulo do paciente
         save_registros(lista); // Guardamos a informação no ficheiro dos registos
         printf("\nNovo registo adicionado!\n");
     } else {
@@ -125,13 +157,16 @@ void listar_informacao_paciente(PACIENTES lista) {
         REGISTOS registro = paciente->pessoa.pessoa_registo;
         if (registro == NULL)
             printf("\nPaciente com ID %d não tem Registos Clínicos \n", id);
-        while (registro != NULL) {
-            printf("\nData do Registo: %d/%d/%d\n", registro->reg.data_registo.dia, registro->reg.data_registo.mes, registro->reg.data_registo.ano);
-            printf("Tensão Máxima: %d\n", registro->reg.tensao_max);
-            printf("Tensão Mínima: %d\n", registro->reg.tensao_min);
-            printf("Peso: %d\n", registro->reg.peso);
-            printf("Altura: %d\n", registro->reg.altura);
-            registro = registro->prox;
+        else{
+            registro = registro->prox; // Saltamos o Header
+            while (registro != NULL) {
+                printf("\nData do Registo: %d/%d/%d\n", registro->reg.data_registo.dia, registro->reg.data_registo.mes, registro->reg.data_registo.ano);
+                printf("Tensão Máxima: %d\n", registro->reg.tensao_max);
+                printf("Tensão Mínima: %d\n", registro->reg.tensao_min);
+                printf("Peso: %d\n", registro->reg.peso);
+                printf("Altura: %d\n", registro->reg.altura);
+                registro = registro->prox;
+            }
         }
     } 
     else {
