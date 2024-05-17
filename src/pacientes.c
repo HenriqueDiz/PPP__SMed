@@ -49,6 +49,7 @@ PACIENTES load_pacientes() {
         fscanf(ficheiro, "%d", &dados.id);
         fgets(dados.nome, 40, ficheiro);
         dados.nome[strcspn(dados.nome, "\n")] = '\0';
+        dados.nome[strcspn(dados.nome, "\r")] = '\0'; //Segurança para sistemas Unix!!
         fscanf(ficheiro, "%d/%d/%d", &dados.data_nascimento.dia, &dados.data_nascimento.mes, &dados.data_nascimento.ano);
         fscanf(ficheiro, "%s", dados.cartao_de_cidadao);
         fscanf(ficheiro, "%d", &dados.telefone);
