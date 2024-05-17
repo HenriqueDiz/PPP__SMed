@@ -16,16 +16,6 @@ int verifica_numeros(const char* input) {
     return 1; // É um Número
 }
 
-// verificar se tem 9 digitos (telefone)
-int verificar_telefone(const char *str) {
-    int comprimento = 0;
-    while (*str) {
-        comprimento++;
-        str++;
-    }
-    return comprimento >= 9;
-}
-
 // Função para verificar se é uma string
 int verifica_string(const char *str) {
     for (int i = 0; str[i] != '\0'; i++) {
@@ -51,17 +41,11 @@ int verifica_email(const char *str) {
 int verifica_cartao_cidadao(const char *str) {
     int n1, n2, n3;
     char c1, c2;
-    // verificar comprimento
-    if (strlen(str) != 13) {
-        return 0; // n é valido
+    if (strlen(str) == 14 && sscanf(str, "%8d-%1d-%1c%1c%1d", &n1, &n2, &c1, &c2, &n3) == 5) { //verificar 8 nums - 1 num - 2 letras + 1 num (14 Caracteres)
+        if (isupper(c1) && isupper(c2)) // Verificar uppercase
+            return 1; // Válido
     }
-    if (sscanf(str, "%8d-%1d-%1c%1c%1d", &n1, &n2, &c1, &c2, &n3) == 5) { //verificar 8 nums / 1 num / 2 letras / 1 num
-        // letras maiuscluas?
-        if (isupper(c1) && isupper(c2)) { //verificar uppercase
-            return 1; // valido
-        }
-    }
-    return 0; // n é valido
+    return 0; // É válido
 }
 
 // Função para Limpar o Buffer
@@ -78,33 +62,28 @@ PACIENTES find_id(PACIENTES lista,int id){
     return paciente;
 }
 
+/////////////////////////////// Funções para os Inputs ///////////////////////////////
 
-
-
-
-
-/////////////////////////////// Inputs ///////////////////////////////
-int input_numeros(int flag) {  //portanto, flag=1 -> numeros de telefone
+int input_numeros(int flag) {  // Portanto, flag = 1 -> Número de Telefone
     int num;
     char input[TAM_INT];
-
     while (1) {
         fgets(input, TAM_INT, stdin);
-
-        // Verifica se o input tem o caractere '\n' e o remove
-        if (input[strlen(input) - 1] == '\n') {
+        if (input[strlen(input) - 1] == '\n') { // Verifica se o input tem o caractere '\n' e o remove
             input[strcspn(input, "\n")] = '\0';  // Removemos a primeira ocorrência de '\n'
-
+            if (strlen(input) == 0) { // Add this condition to check for blank input
+                printf("Por favor, insira um valor válido: ");
+                continue;
+            }
             if (verifica_numeros(input)) {
-                if (flag == 1 && !verificar_telefone(input)) {
+                if (flag == 1 && strlen(input) != 9)
                     printf("Número de telefone é composto por 9 dígitos! Insira novamente: ");
-                } else {
+                else {
                     sscanf(input, "%d", &num);
                     return num;
                 }
-            } else {
+            } else
                 printf("Número inválido. Por favor, insira dígitos válidos: ");
-            }
         } else {
             printf("Número inválido. Por favor, insira um número dentro do tamanho do Buffer (%d dígitos no Máximo): ", TAM_INT - 2);
             limpar_buffer();

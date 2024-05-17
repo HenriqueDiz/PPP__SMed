@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../lib/declaracoes.h"
 #include "../lib/estruturas.h"
 
 /////////////////////////////// Ficheiro Pacientes ///////////////////////////////
@@ -37,6 +38,19 @@ void insere_pacientes(PACIENTES lista, info novo) {
     }
 }
 
+PACIENTES destroi_pacientes(PACIENTES lista){
+    PACIENTES temp;
+    size_t size = lista->pessoa.id; // Vamos buscar o tamanho ao Header
+    for (size_t i = 0; i < size; i++){
+        temp = lista;
+        if (temp->pessoa.pessoa_registo != NULL) destroi_registo(temp->pessoa.pessoa_registo);
+        lista = lista->prox;
+        free (temp);
+    }
+    free(lista);
+    return NULL;
+}
+
 PACIENTES load_pacientes() {
     FILE *ficheiro = fopen("docs/doentes.txt", "r");
     if (ficheiro == NULL) {
@@ -49,7 +63,7 @@ PACIENTES load_pacientes() {
         fscanf(ficheiro, "%d", &dados.id);
         fgets(dados.nome, 40, ficheiro);
         dados.nome[strcspn(dados.nome, "\n")] = '\0';
-        dados.nome[strcspn(dados.nome, "\r")] = '\0'; //Segurança para sistemas Unix!!
+        dados.nome[strcspn(dados.nome, "\r")] = '\0'; // Para Mac e Linux 
         fscanf(ficheiro, "%d/%d/%d", &dados.data_nascimento.dia, &dados.data_nascimento.mes, &dados.data_nascimento.ano);
         fscanf(ficheiro, "%s", dados.cartao_de_cidadao);
         fscanf(ficheiro, "%d", &dados.telefone);

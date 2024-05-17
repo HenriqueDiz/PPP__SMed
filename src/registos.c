@@ -45,10 +45,23 @@ void insere_registo(registo novo, PACIENTES lista, int id) {
     no = (REGISTOS) malloc (sizeof(bloco_registo));
     if (no != NULL) {
         no->reg = novo;
+        paciente->pessoa.pessoa_registo->reg.peso++; // Adicionamos ao Header para controlarmos o número de Registos do Paciente
         procura_registo(paciente->pessoa.pessoa_registo, novo.data_registo, &ant, &inutil);
         no->prox = ant->prox;
         ant->prox = no;
     }
+}
+
+REGISTOS destroi_registo(REGISTOS lista){
+    REGISTOS temp;
+    size_t size = lista->reg.peso; // Vamos buscar o tamanho ao Header
+    for (size_t i = 0; i < size; i++){
+        temp = lista;
+        lista = lista->prox;
+        free (temp);
+    }
+    free(lista);
+    return NULL;
 }
 
 void load_registros(PACIENTES lista_pacientes) {

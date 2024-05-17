@@ -34,17 +34,21 @@ void elimina_pacientes(PACIENTES lista) {
     printf("\nID do paciente p/ eliminar? ");
     int id = input_numeros(0);
     PACIENTES ant = lista, atual = lista->prox;
-    while (atual != NULL && atual->pessoa.id != id) {
+    while (atual!= NULL && atual->pessoa.id!= id) {
         ant = atual;
         atual = atual->prox;
     }
-    if (atual != NULL) {
+    if (atual!= NULL) {
+        lista->pessoa.id--; // Tiramos ao número Total de Pacientes
+        if (atual->pessoa.pessoa_registo != NULL)
+            destroi_registo(atual->pessoa.pessoa_registo);
         ant->prox = atual->prox;
         free(atual);
-        printf("\nPaciente com ID %d eliminado!", id);
+        printf("\nPaciente com ID %d eliminado!\n", id);
     } else
         printf("\nPaciente com ID %d não encontrado\n", id);
     save_pacientes(lista); // Guardamos a informação no ficheiro dos pacientes
+    save_registros(lista); // Guardamos a informação no ficheiro dos registos
 }
 
 // Case 3 : Consultar Doentes (Ordem Alfabética)
@@ -52,7 +56,7 @@ void imprime(PACIENTES lista){
     size_t size = lista->pessoa.id; // Vamos buscar ao Header o tamanho da Lista
     PACIENTES aux = lista->prox; // Ignoramos o Header
     for (size_t i = 0; i < size; i++){
-        printf("Paciente ID %d: %s\n",aux->pessoa.id, aux->pessoa.nome); //mostrar somente nome
+        printf("Paciente ID %d: %s\n",aux->pessoa.id, aux->pessoa.nome); // Mostramos o Nome
         aux = aux->prox;
     }
 }
@@ -136,9 +140,8 @@ void novo_registo(PACIENTES lista) {
         insere_registo(novo, lista, id); // Inserimos o novo registo no nódulo do paciente
         save_registros(lista); // Guardamos a informação no ficheiro dos registos
         printf("\nNovo registo adicionado!\n");
-    } else {
+    } else
         printf("\nPaciente com ID %d não encontrado.\n", id);
-    }
 }
 
 // Case 6 : Listar toda a informação de um paciente
@@ -169,9 +172,8 @@ void listar_informacao_paciente(PACIENTES lista) {
             }
         }
     } 
-    else {
+    else
         printf("\nPaciente com ID %d não encontrado.\n", id);
-    }
 }
 
 /////////////////////////////// Função Running ///////////////////////////////
