@@ -120,10 +120,15 @@ void novo_registo(PACIENTES lista) {
         registo novo;
         printf("Qual a data do registo (Formato : dia / mes / ano) ? ");
         novo.data_registo = input_data();
-        printf("Qual a tensão máxima ? ");
-        novo.tensao_max = input_numeros(0);
-        printf("Qual a tensão mínima ? ");
-        novo.tensao_min = input_numeros(0);
+        do {
+            printf("Qual a tensão máxima ? ");
+            novo.tensao_max = input_numeros(0);
+            printf("Qual a tensão mínima ? ");
+            novo.tensao_min = input_numeros(0);
+            if (novo.tensao_min > novo.tensao_max) { //nao permitir que tensao min seja maior que a max
+                printf("A tensão Mínima não pode ser maior que a tensão Máxima! Introduza as Tensões novamente.\n");
+            }
+        } while (novo.tensao_min > novo.tensao_max);   
         printf("Qual o peso ? ");
         novo.peso = input_numeros(0);
         printf("Qual a altura ? ");
