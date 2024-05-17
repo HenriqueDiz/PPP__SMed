@@ -16,7 +16,7 @@ void novo_paciente(PACIENTES informacao) {
     printf("Qual o cartão de cidadão do paciente ? (Formato: 12345678-9-AB1) ");
     strcpy(novo.cartao_de_cidadao,input_strings(2));
     printf("Qual o telefone do paciente ? ");
-    novo.telefone = input_numeros();
+    novo.telefone = input_numeros(1);
     printf("Qual o email do paciente ? ");
     strcpy(novo.email,input_strings(1));
     informacao->pessoa.id++;  // Aumentamos o número de pacientes no header
@@ -32,7 +32,7 @@ void novo_paciente(PACIENTES informacao) {
 // Case 2 : Eliminar Doente Existente
 void elimina_pacientes(PACIENTES lista) {
     printf("\nID do paciente p/ eliminar? ");
-    int id = input_numeros();
+    int id = input_numeros(0);
     PACIENTES ant = lista, atual = lista->prox;
     while (atual != NULL && atual->pessoa.id != id) {
         ant = atual;
@@ -52,12 +52,7 @@ void imprime(PACIENTES lista){
     size_t size = lista->pessoa.id; // Vamos buscar ao Header o tamanho da Lista
     PACIENTES aux = lista->prox; // Ignoramos o Header
     for (size_t i = 0; i < size; i++){
-        printf("ID: %d\n", aux->pessoa.id);
-        printf("Nome: %s\n", aux->pessoa.nome);
-        printf("Data de Nascimento: %d/%d/%d\n", aux->pessoa.data_nascimento.dia, aux->pessoa.data_nascimento.mes, aux->pessoa.data_nascimento.ano);
-        printf("Cartão de Cidadão: %s\n", aux->pessoa.cartao_de_cidadao);
-        printf("Telefone: %d\n", aux->pessoa.telefone);
-        printf("Email: %s\n\n", aux->pessoa.email);
+        printf("Paciente ID %d: %s\n",aux->pessoa.id, aux->pessoa.nome); //mostrar somente nome
         aux = aux->prox;
     }
 }
@@ -65,7 +60,7 @@ void imprime(PACIENTES lista){
 // Case 4 : Consultar Doentes - Tensão
 void listar_tensoes_acima(PACIENTES lista) {
     printf("\nQual o valor limite da tensão máxima? ");
-    int limite = input_numeros(), encontrados = 0;
+    int limite = input_numeros(0), encontrados = 0;
     REGISTOS temp = NULL; // Criamos uma lista temporária
     size_t size = lista->pessoa.id; // Vamos buscar ao Header o tamanho da Lista
     PACIENTES paciente = lista->prox; // Saltamos o Header
@@ -119,20 +114,20 @@ void listar_tensoes_acima(PACIENTES lista) {
 // Case 5 : Novo Registo Clínico 
 void novo_registo(PACIENTES lista) {
     printf("\nQual o ID do paciente para adicionar um novo registo? ");
-    int id = input_numeros();
+    int id = input_numeros(0);
     PACIENTES paciente = find_id(lista,id);
     if (paciente != NULL) {
         registo novo;
         printf("Qual a data do registo (Formato : dia / mes / ano) ? ");
         novo.data_registo = input_data();
         printf("Qual a tensão máxima ? ");
-        novo.tensao_max = input_numeros();
+        novo.tensao_max = input_numeros(0);
         printf("Qual a tensão mínima ? ");
-        novo.tensao_min = input_numeros();
+        novo.tensao_min = input_numeros(0);
         printf("Qual o peso ? ");
-        novo.peso = input_numeros();
+        novo.peso = input_numeros(0);
         printf("Qual a altura ? ");
-        novo.altura = input_numeros();
+        novo.altura = input_numeros(0);
         insere_registo(novo, lista, id); // Inserimos o novo registo no nódulo do paciente
         save_registros(lista); // Guardamos a informação no ficheiro dos registos
         printf("\nNovo registo adicionado!\n");
@@ -144,7 +139,7 @@ void novo_registo(PACIENTES lista) {
 // Case 6 : Listar toda a informação de um paciente
 void listar_informacao_paciente(PACIENTES lista) {
     printf("\nQual o ID do paciente? ");
-    int id = input_numeros();
+    int id = input_numeros(0);
     PACIENTES paciente = find_id(lista,id);
     if (paciente != NULL) {
         printf("\nInformação do Paciente ID: %d\n\n", paciente->pessoa.id);
@@ -188,7 +183,7 @@ void running(PACIENTES informacao) {
         printf("///   7. Sair                                    ///\n");
         printf("////// [Hospital da Universidade de Coimbra]  //////\n");       
         printf("\nQual a operação pretendida?\n> ");
-        int choice = input_numeros();
+        int choice = input_numeros(0);
         switch (choice) {
             case 1:   // Introduzir dados de um novo paciente
                 novo_paciente(informacao);
