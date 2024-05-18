@@ -71,7 +71,7 @@ int input_numeros(int flag) {  // Portanto, flag = 1 -> Número de Telefone
         fgets(input, TAM_INT, stdin);
         if (input[strlen(input) - 1] == '\n') { // Verifica se o input tem o caractere '\n' e o remove
             input[strcspn(input, "\n")] = '\0';  // Removemos a primeira ocorrência de '\n'
-            if (strlen(input) == 0) { // Add this condition to check for blank input
+            if (strlen(input) == 0) { // Verifica se o input é blank
                 printf("Por favor, insira um valor válido: ");
                 continue;
             }
@@ -98,17 +98,21 @@ data input_data() {
     while (1) {
         fgets(input, TAM_STR, stdin);
         if (input[strlen(input) - 1] == '\n') {
-            input[strcspn(input, "\n")] = '\0';   // Removemos a primeira occorência de '\n'
+            input[strcspn(input, "\n")] = '\0';   // Removemos a primeira ocorrência de '\n'
+            if (strlen(input) == 0) { // Verifica se o input é blank
+                printf("Por favor, insira um valor válido: ");
+                continue;
+            }
             if (sscanf(input, "%d/%d/%d", &temp.dia, &temp.mes, &temp.ano) == 3) { // Verificar se estão todas completas
                 if (temp.dia >= 1 && temp.dia <= 31 && temp.mes >= 1 && temp.mes <= 12 && temp.ano >= 1000 && temp.ano <= 9999)
                     return temp; // Data Válida
                 else
                     printf("Data inválida. Por favor, insira números válidos para a Data : ");
-            } 
+            }
             else printf("Data inválida. Por favor, preencha os 3 campos da Data : ");
         } else{
             printf("Data inválida. Por favor, insira uma Data válida : ");
-            limpar_buffer();            
+            limpar_buffer();
         }
     }
 }
@@ -119,7 +123,11 @@ char* input_strings(int flag) {
     while (1) {
         fgets(input, TAM_STR, stdin);
         if (input[strlen(input) - 1] == '\n') {
-            input[strcspn(input, "\n")] = '\0';   // Removemos a primeira occorência de '\n'
+            input[strcspn(input, "\n")] = '\0';   // Removemos a primeira ocorrência de '\n'
+            if (strlen(input) == 0) { // Verifica se o input é blank
+                printf("Por favor, insira um valor válido: ");
+                continue;
+            }
             switch(flag) {
                 case 0:   // Nome
                     if (verifica_string(input)) return strdup(input);
@@ -137,7 +145,7 @@ char* input_strings(int flag) {
         }
         else{
             printf("Input inválido. Por favor, insira um Input dentro do tamanho do Buffer ( %d Caracteres no Máximo ) : ", TAM_STR - 2);
-            limpar_buffer();            
+            limpar_buffer();
         }
     }
 }
