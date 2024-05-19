@@ -41,7 +41,7 @@ void insere_pacientes(PACIENTES lista, info novo) {
 PACIENTES destroi_pacientes(PACIENTES lista){
     PACIENTES temp;
     size_t size = lista->pessoa.id; // Vamos buscar o tamanho ao Header
-    for (size_t i = 0; i < size; i++){
+    for (size_t i = 0; i <= size; i++){
         temp = lista;
         if (temp->pessoa.pessoa_registo != NULL) destroi_registo(temp->pessoa.pessoa_registo);
         lista = lista->prox;
