@@ -6,6 +6,7 @@
 
 /////////////////////////////// Ficheiro Pacientes ///////////////////////////////
 
+// Funcão para Criar a Lista de Pacientes
 PACIENTES cria_pacientes(){
     PACIENTES aux;
     info novo = {{1,1,2000},"11111111-1-AB1","header@header.pt","Header", 0, 0, NULL};  // Definimos a informações do Header e iremos usar o 'id' para armazenar o número de pacientes
@@ -17,6 +18,7 @@ PACIENTES cria_pacientes(){
     return aux;
 }
 
+// Função para Ordenar todos os pacientes por Ordem Alfabética na Lista de Pacientes
 void procura_paciente(PACIENTES lista, char* chave_nome, PACIENTES* ant, PACIENTES* actual){
     *ant = lista; *actual = lista->prox;
     while ((*actual) != NULL && strcasecmp((*actual)->pessoa.nome, chave_nome) < 0) {
@@ -27,6 +29,7 @@ void procura_paciente(PACIENTES lista, char* chave_nome, PACIENTES* ant, PACIENT
         *actual = NULL;   /* Paciente não encontrado*/
 }
 
+// Função para Inserirmos o paciente na Lista de Pacientes
 void insere_pacientes(PACIENTES lista, info novo) {
     PACIENTES no, ant, inutil;
     no = (PACIENTES) malloc (sizeof(bloco));
@@ -38,12 +41,13 @@ void insere_pacientes(PACIENTES lista, info novo) {
     }
 }
 
+// Função para Destruir a Lista de Pacientes
 PACIENTES destroi_pacientes(PACIENTES lista){
     PACIENTES temp;
     size_t size = lista->pessoa.id; // Vamos buscar o tamanho ao Header
     for (size_t i = 0; i <= size; i++){
         temp = lista;
-        if (temp->pessoa.pessoa_registo != NULL) destroi_registo(temp->pessoa.pessoa_registo);
+        if (temp->pessoa.pessoa_registo != NULL) destroi_registos(temp->pessoa.pessoa_registo);
         lista = lista->prox;
         free (temp);
     }
@@ -51,6 +55,7 @@ PACIENTES destroi_pacientes(PACIENTES lista){
     return NULL;
 }
 
+// Função para Carregar a informação do Ficheiro de Texto na Lista de Pacientes
 PACIENTES load_pacientes() {
     FILE *ficheiro = fopen("docs/doentes.txt", "r");
     if (ficheiro == NULL) {
@@ -79,6 +84,7 @@ PACIENTES load_pacientes() {
     return lista_pacientes;
 }
 
+// Função para Escrever a informação da Lista de Pacientes no Ficheiro de Texto
 void save_pacientes(PACIENTES lista_pacientes) {
     FILE* ficheiro = fopen("docs/doentes.txt", "w");
     if (ficheiro == NULL) {

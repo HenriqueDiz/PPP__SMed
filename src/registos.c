@@ -5,6 +5,7 @@
 
 /////////////////////////////// Ficheiro Registos ///////////////////////////////
 
+// Funcão para Criar a Lista de Registos
 REGISTOS cria_registos(){
     REGISTOS aux;
     registo novo = {{0,0,0},0,0,0,0};  // Definimos a informações do Header e iremos usar o 'peso' para armazenar o número de registos
@@ -16,17 +17,7 @@ REGISTOS cria_registos(){
     return aux;
 }
 
-int comparar_datas(data d1, data d2) {
-    if (d1.ano < d2.ano) return -1;
-    if (d1.ano > d2.ano) return 1;
-    if (d1.mes < d2.mes) return -1;
-    if (d1.mes > d2.mes) return 1;
-    if (d1.dia < d2.dia) return -1;
-    if (d1.dia > d2.dia) return 1;
-    return 0;
-}
-
-// Ordenamos os registos dos mais antigos para os mais recentes
+// Função para Ordenar todos os registos dos mais antigos para os mais recentes na Lista de Registos
 void procura_registo(REGISTOS lista, data epoca, REGISTOS* ant, REGISTOS* actual){
     *ant = lista; *actual = lista->prox;
     while ((*actual) != NULL && comparar_datas((*actual)->reg.data_registo, epoca) < 0) {
@@ -37,9 +28,10 @@ void procura_registo(REGISTOS lista, data epoca, REGISTOS* ant, REGISTOS* actual
         *actual = NULL; 
 }
 
-void insere_registo(registo novo, PACIENTES lista, int id) {
+// Função para Inserirmos o Registo na Lista de Registos
+void insere_registos(registo novo, PACIENTES lista, int id) {
     PACIENTES paciente = find_id(lista,id); // Procuramos pelo nódulo do paciente
-    if (paciente->pessoa.pessoa_registo == NULL) // Se não houver registos, criamos uma Fila de Registos para esse paciente
+    if (paciente->pessoa.pessoa_registo == NULL) // Se não houver registos, criamos uma Lista de Registos para esse paciente
         paciente->pessoa.pessoa_registo = cria_registos();
     REGISTOS no, ant, inutil;
     no = (REGISTOS) malloc (sizeof(bloco_registo));
@@ -52,7 +44,8 @@ void insere_registo(registo novo, PACIENTES lista, int id) {
     }
 }
 
-REGISTOS destroi_registo(REGISTOS lista){
+// Função para Destruir a Lista de Registos
+REGISTOS destroi_registos(REGISTOS lista){
     REGISTOS temp;
     size_t size = lista->reg.peso; // Vamos buscar o tamanho ao Header
     for (size_t i = 0; i < size; i++){
@@ -64,7 +57,8 @@ REGISTOS destroi_registo(REGISTOS lista){
     return NULL;
 }
 
-void load_registros(PACIENTES lista_pacientes) {
+// Função para Carregar a informação do Ficheiro de Texto na Lista de Registos
+void load_registos(PACIENTES lista_pacientes) {
     FILE* ficheiro = fopen("docs/registos.txt", "r");
     if (ficheiro == NULL) {
         printf("Ficheiro registos.txt não encontrado, sendo criado novo (Processo: Loading)\n"); 
@@ -78,7 +72,7 @@ void load_registros(PACIENTES lista_pacientes) {
         fscanf(ficheiro, "%d", &ficha.tensao_min);
         fscanf(ficheiro, "%d", &ficha.peso);
         fscanf(ficheiro, "%d", &ficha.altura);
-        insere_registo(ficha, lista_pacientes, id);
+        insere_registos(ficha, lista_pacientes, id);
     }
     if (fclose(ficheiro) == EOF){
         printf("Erro ao fechar o ficheiro registos.txt (Processo: Loading)\n");        
@@ -86,7 +80,8 @@ void load_registros(PACIENTES lista_pacientes) {
     }
 }
 
-void save_registros(PACIENTES lista_pacientes) {
+// Função para Escrever a informação da Lista de Registos no Ficheiro de Texto
+void save_registos(PACIENTES lista_pacientes) {
     FILE* ficheiro = fopen("docs/registos.txt", "w");
     if (ficheiro == NULL) {
         printf("Erro ao fechar o ficheiro registos.txt (Processo: Saving)\n");   

@@ -25,7 +25,7 @@ int verifica_string(const char *str) {
     return 1; // É só letras e espaços
 }
 
-// Função para verificar se email ('@' e '.' obrigatórios)
+// Função para verificar se é email ('@' e '.' obrigatórios no email)
 int verifica_email(const char *str) {
     int tem_arroba = 0, tem_ponto = 0;
     for (int i = 0; str[i] != '\0'; i++) {
@@ -41,11 +41,11 @@ int verifica_email(const char *str) {
 int verifica_cartao_cidadao(const char *str) {
     int n1, n2, n3;
     char c1, c2;
-    if (strlen(str) == 14 && sscanf(str, "%8d-%1d-%1c%1c%1d", &n1, &n2, &c1, &c2, &n3) == 5) { //verificar 8 nums - 1 num - 2 letras + 1 num (14 Caracteres)
-        if (isupper(c1) && isupper(c2)) // Verificar uppercase
-            return 1; // Válido
+    if (strlen(str) == 14 && sscanf(str, "%8d-%1d-%1c%1c%1d", &n1, &n2, &c1, &c2, &n3) == 5) { // Verificar Formato: 8 nums - 1 num - 2 letras + 1 num
+        if (isupper(c1) && isupper(c2)) // Verificar se as Letras são Maiúsculas
+            return 1; // CC Válido
     }
-    return 0; // É válido
+    return 0; // CC Não Válido
 }
 
 // Função para Limpar o Buffer
@@ -62,16 +62,28 @@ PACIENTES find_id(PACIENTES lista,int id){
     return paciente;
 }
 
+// Função para comparar Datas
+int comparar_datas(data d1, data d2) {
+    if (d1.ano < d2.ano) return -1;
+    if (d1.ano > d2.ano) return 1;
+    if (d1.mes < d2.mes) return -1;
+    if (d1.mes > d2.mes) return 1;
+    if (d1.dia < d2.dia) return -1;
+    if (d1.dia > d2.dia) return 1;
+    return 0;
+}
+
 /////////////////////////////// Funções para os Inputs ///////////////////////////////
 
-int input_numeros(int flag) {  // Portanto, flag = 1 -> Número de Telefone
+// Função para o Input de Números
+int input_numeros(int flag) {  // Se flag = 1 : Verificar Número de Telefone
     int num;
     char input[TAM_INT];
     while (1) {
         fgets(input, TAM_INT, stdin);
-        if (input[strlen(input) - 1] == '\n') { // Verifica se o input tem o caractere '\n' e o remove
+        if (input[strlen(input) - 1] == '\n') { // Verifica se o input tem o caractere '\n'
             input[strcspn(input, "\n")] = '\0';  // Removemos a primeira ocorrência de '\n'
-            if (strlen(input) == 0) { // Verifica se o input é blank
+            if (strlen(input) == 0) { // Verificamos se o input está Vazio
                 printf("Por favor, insira um valor válido: ");
                 continue;
             }
@@ -91,15 +103,15 @@ int input_numeros(int flag) {  // Portanto, flag = 1 -> Número de Telefone
     }
 }
 
-// Função para o input de Datas
+// Função para o Input de Datas
 data input_data() {
     data temp;
     char input[TAM_STR];
     while (1) {
         fgets(input, TAM_STR, stdin);
-        if (input[strlen(input) - 1] == '\n') {
+        if (input[strlen(input) - 1] == '\n') {   // Verifica se o input tem o caractere '\n'
             input[strcspn(input, "\n")] = '\0';   // Removemos a primeira ocorrência de '\n'
-            if (strlen(input) == 0) { // Verifica se o input é blank
+            if (strlen(input) == 0) { // Verificamos se o input está Vazio
                 printf("Por favor, insira um valor válido: ");
                 continue;
             }
@@ -117,12 +129,12 @@ data input_data() {
     }
 }
 
-// Função para o input de Strings (Nome, Email, CC)
+// Função para o Input de Strings (Nome, Email, CC)
 char* input_strings(int flag) {
     char input[TAM_STR];
     while (1) {
         fgets(input, TAM_STR, stdin);
-        if (input[strlen(input) - 1] == '\n') {
+        if (input[strlen(input) - 1] == '\n') {   // Verifica se o input tem o caractere '\n'
             input[strcspn(input, "\n")] = '\0';   // Removemos a primeira ocorrência de '\n'
             if (strlen(input) == 0) { // Verifica se o input é blank
                 printf("Por favor, insira um valor válido: ");
