@@ -10,6 +10,8 @@
 #define BLUE    "\x1b[34m"
 #define MAGENTA "\x1b[35m"
 #define CYAN    "\x1b[36m"
+#define BRIGHT_RED   "\x1b[91m"
+#define BRIGHT_GREEN "\x1b[92m"
 
 void limpar_buffer();
 int verifica_numeros(const char* input);
