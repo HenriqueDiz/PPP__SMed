@@ -10,23 +10,23 @@
 void novo_paciente(PACIENTES informacao) {
     info novo;
     printf(RED"\n\n\n>>>>> [Registar Paciente Novo na Database HUC-S_MED] <<<<<"RESET"\n");
-    printf("                Nome do paciente: ");
+    printf(RED"                Nome do paciente: ");
     char* str1 = input_strings(0);
     strcpy(novo.nome,str1);
     free(str1);
-    printf("--------------------------------------------------------------\n");
-    printf("       Data de nascimento do paciente [DD/MM/AAAA]: ");
+    printf(RED"--------------------------------------------------------------"RESET"\n");
+    printf(RED"       Data de nascimento do paciente [DD/MM/AAAA]: ");
     novo.data_nascimento = input_data();
-    printf("--------------------------------------------------------------\n");
-    printf("Cartão de Cidadão do Paciente [Formato 12345678-1-AB1]: ");
+    printf(RED"--------------------------------------------------------------"RESET"\n");
+    printf(RED"Cartão de Cidadão do Paciente [Formato 12345678-1-AB1]: ");
     char* str2 = input_strings(2);
     strcpy(novo.cartao_de_cidadao,str2);
     free(str2);
-    printf("--------------------------------------------------------------\n");
-    printf("              NºTelefone do Paciente ? ");
+    printf(RED"--------------------------------------------------------------"RESET"\n");
+    printf(RED"              NºTelefone do Paciente ? ");
     novo.telefone = input_numeros(1);
-    printf("--------------------------------------------------------------\n");
-    printf("               Qual o email do paciente ? ");
+    printf(RED"--------------------------------------------------------------"RESET"\n");
+    printf(RED"               Qual o email do paciente ? ");
     char* str3 = input_strings(1);
     strcpy(novo.email,str3);
     free(str3);
@@ -37,14 +37,14 @@ void novo_paciente(PACIENTES informacao) {
     novo.pessoa_registo =  NULL;
     insere_pacientes(informacao, novo); // Inserimos o novo paciente na estrutura
     save_pacientes(informacao); // Guardamos a informação no ficheiro dos pacientes
-    printf("--------------------------------------------------------------\n");
+    printf(RED"--------------------------------------------------------------"RESET"\n");
     printf(RED">>>>> [Paciente Registado com Sucesso na Database HUC-S_MED!] <<<<<"RESET"\n");
 }
 
 // Case 2 : Eliminar Doente Existente
 void elimina_pacientes(PACIENTES lista) {
     printf(YELLOW"\n\n\n>>>>> [Remover Paciente da Database HUC-S_MED] <<<<<"RESET"\n");
-    printf("Insira o ID do Paciente que pretende eliminar: ");
+    printf(YELLOW"Insira o ID do Paciente que pretende eliminar: ");
     int id = input_numeros(0);
     PACIENTES ant = lista, atual = lista->prox;
     while (atual!= NULL && atual->pessoa.id!= id) {
@@ -58,7 +58,7 @@ void elimina_pacientes(PACIENTES lista) {
         ant->prox = atual->prox;
         free(atual);
         printf(YELLOW"--------------------------------------------------------------"RESET"\n");
-        printf("Paciente com ID Nº%d Eliminado com Sucesso!\n", id);
+        printf(YELLOW"Paciente com ID Nº%d Eliminado com Sucesso!"RESET"\n", id);
         printf(YELLOW"--------------------------------------------------------------"RESET"\n");
     } else {
         printf("...Paciente com ID Nº%d não encontrado...\n", id);
@@ -74,7 +74,7 @@ void imprime(PACIENTES lista){
     PACIENTES aux = lista->prox; // Ignoramos o Header
     printf(BLUE"--------------------------------------------------------------"RESET"\n");
     for (size_t i = 0; i < size; i++){
-        printf("                 Paciente ID Nº%d: %s\n",aux->pessoa.id, aux->pessoa.nome); // Mostramos o Nome
+        printf(BLUE"                 Paciente ID Nº%d: %s"RESET"\n",aux->pessoa.id, aux->pessoa.nome); // Mostramos o Nome
         printf(BLUE"--------------------------------------------------------------"RESET"\n");
         aux = aux->prox;
     }
@@ -83,7 +83,7 @@ void imprime(PACIENTES lista){
 // Case 4 : Consultar Doentes - Tensão
 void listar_tensoes_acima(PACIENTES lista) {
     printf(GREEN"\n\n\n>>>>> [Lista de Tensão dos Pacientes HUC-S_MED] <<<<<"RESET"\n");
-    printf("Valor limite da Tensão Maxima: ");
+    printf(GREEN"Valor limite da Tensão Maxima: ");
     int limite = input_numeros(0), encontrados = 0;
     REGISTOS temp = NULL; // Criamos uma lista temporária
     size_t size = lista->pessoa.id; // Vamos buscar ao Header o tamanho da Lista
@@ -123,7 +123,7 @@ void listar_tensoes_acima(PACIENTES lista) {
     current = temp;
     printf(GREEN"--------------------------------------------------------------"RESET"\n");
     while (current!= NULL) {
-        printf("          Tensão Máxima: %d do paciente com ID Nº%d\n", current->reg.tensao_max, current->reg.tensao_min);
+        printf(GREEN"          Tensão Máxima: %d do paciente com ID Nº%d"RESET"\n", current->reg.tensao_max, current->reg.tensao_min);
         printf(GREEN"--------------------------------------------------------------"RESET"\n");
         current = current->prox;
     }
@@ -140,30 +140,30 @@ void listar_tensoes_acima(PACIENTES lista) {
 // Case 5 : Novo Registo Clínico 
 void novo_registo(PACIENTES lista) {
     printf(MAGENTA"\n\n\n>>>>> [Inserir Novo Registo Clinico] <<<<<"RESET"\n");
-    printf("ID do paciente: ");
+    printf(MAGENTA"ID do paciente: ");
     int id = input_numeros(0);
     PACIENTES paciente = find_id(lista,id);
     if (paciente != NULL) {
         registo novo;
         printf(MAGENTA"\n\n--------------------------------------------------------------"RESET"\n");
-        printf("      Data do registo [DD/MM/AAAA]: ");
+        printf(MAGENTA"      Data do registo [DD/MM/AAAA]: ");
         novo.data_registo = input_data();
         do {
             printf(MAGENTA"--------------------------------------------------------------"RESET"\n");
-            printf("             Tensão Maxima: ");
+            printf(MAGENTA"             Tensão Maxima: ");
             novo.tensao_max = input_numeros(0);
             printf(MAGENTA"--------------------------------------------------------------"RESET"\n");
-            printf("             Tensão Minima: ");
+            printf(MAGENTA"             Tensão Minima: ");
             novo.tensao_min = input_numeros(0);
             printf(MAGENTA"--------------------------------------------------------------"RESET"\n");
             if (novo.tensao_min > novo.tensao_max) { //nao permitir que tensao min seja maior que a max
                 printf("... A Tensão Minima não pode ser maior que a Tensão Maxima! Introduza Novamente...\n");
             }
-        } while (novo.tensao_min > novo.tensao_max);   
-        printf("               Peso: ");
+        } while (novo.tensao_min > novo.tensao_max);
+        printf(MAGENTA"               Peso: ");
         novo.peso = input_numeros(0);
         printf(MAGENTA"--------------------------------------------------------------"RESET"\n");
-        printf("              Altura: ");
+        printf(MAGENTA"              Altura: ");
         novo.altura = input_numeros(0);
         printf(MAGENTA"--------------------------------------------------------------"RESET"\n");
         insere_registo(novo, lista, id); // Inserimos o novo registo no nódulo do paciente
@@ -176,17 +176,17 @@ void novo_registo(PACIENTES lista) {
 // Case 6 : Listar toda a informação de um paciente
 void listar_informacao_paciente(PACIENTES lista) {
     printf(CYAN"\n\n\n>>>>> [Informação Clinica Paciente] <<<<<"RESET"\n");
-    printf("ID do paciente: ");
+    printf(CYAN"ID do paciente: ");
     int id = input_numeros(0);
     PACIENTES paciente = find_id(lista,id);
     if (paciente != NULL) {
         printf(CYAN"\n--------------------------------------------------------------"RESET"\n");
-        printf("            Informação do Paciente com ID Nº%d     \n\n", paciente->pessoa.id);
-        printf("Nome: %s\n", paciente->pessoa.nome);
-        printf("Data de Nascimento: %d/%d/%d\n", paciente->pessoa.data_nascimento.dia, paciente->pessoa.data_nascimento.mes, paciente->pessoa.data_nascimento.ano);
-        printf("Cartão de Cidadão: %s\n", paciente->pessoa.cartao_de_cidadao);
-        printf("Telefone: %d\n", paciente->pessoa.telefone);
-        printf("Email: %s\n", paciente->pessoa.email);
+        printf(CYAN"            Informação do Paciente com ID Nº%d     "RESET"\n\n", paciente->pessoa.id);
+        printf(CYAN"Nome: %s"RESET"\n", paciente->pessoa.nome);
+        printf(CYAN"Data de Nascimento: %d/%d/%d"RESET"\n", paciente->pessoa.data_nascimento.dia, paciente->pessoa.data_nascimento.mes, paciente->pessoa.data_nascimento.ano);
+        printf(CYAN"Cartão de Cidadão: %s"RESET"\n", paciente->pessoa.cartao_de_cidadao);
+        printf(CYAN"Telefone: %d"RESET"\n", paciente->pessoa.telefone);
+        printf(CYAN"Email: %s"RESET"\n", paciente->pessoa.email);
         printf(CYAN"--------------------------------------------------------------"RESET"\n");
         REGISTOS registro = paciente->pessoa.pessoa_registo;
         if (registro == NULL)
@@ -194,12 +194,12 @@ void listar_informacao_paciente(PACIENTES lista) {
         else{
             registro = registro->prox; // Saltamos o Header
             while (registro != NULL) {
-                printf("                       Registo Médico    \n\n");
-                printf("Data do Registo: %d/%d/%d\n", registro->reg.data_registo.dia, registro->reg.data_registo.mes, registro->reg.data_registo.ano);
-                printf("Tensão Máxima: %d\n", registro->reg.tensao_max);
-                printf("Tensão Mínima: %d\n", registro->reg.tensao_min);
-                printf("Peso: %d\n", registro->reg.peso);
-                printf("Altura: %d\n", registro->reg.altura);
+                printf(CYAN"                       Registo Médico    "RESET"\n\n");
+                printf(CYAN"Data do Registo: %d/%d/%d"RESET"\n", registro->reg.data_registo.dia, registro->reg.data_registo.mes, registro->reg.data_registo.ano);
+                printf(CYAN"Tensão Máxima: %d"RESET"\n", registro->reg.tensao_max);
+                printf(CYAN"Tensão Mínima: %d"RESET"\n", registro->reg.tensao_min);
+                printf(CYAN"Peso: %d"RESET"\n", registro->reg.peso);
+                printf(CYAN"Altura: %d"RESET"\n", registro->reg.altura);
                 printf(CYAN"--------------------------------------------------------------"RESET"\n");
                 registro = registro->prox;
             }
@@ -213,17 +213,17 @@ void listar_informacao_paciente(PACIENTES lista) {
 // Case 7 : Número de Pacientes
 void numero_total(PACIENTES info){
     int size = info->pessoa.id; // Número Total de pacientes armazenado no Header
-    printf("\n\n>>>>> [Número Total de Pacientes] <<<<<\n");
-    printf("Número Total de Pacientes: %d\n", size);
+    printf(BRIGHT_GREEN"\n\n>>>>> [Número Total de Pacientes] <<<<<"RESET"\n");
+    printf(BRIGHT_GREEN"Número Total de Pacientes: %d\n", size);
     PACIENTES paciente = info->prox; // Saltamos o Header
     for (int i = 0; i < size; i++){
         if (paciente->pessoa.pessoa_registo != NULL)
-            printf("Paciente com ID Nº%d tem %d registos\n", paciente->pessoa.id, paciente->pessoa.pessoa_registo->reg.peso);
+            printf(BRIGHT_GREEN"Paciente com ID Nº%d tem %d registos\n", paciente->pessoa.id, paciente->pessoa.pessoa_registo->reg.peso);
         else
-            printf("Paciente com ID Nº%d não tem registos\n", paciente->pessoa.id);
+            printf(BRIGHT_GREEN"Paciente com ID Nº%d não tem registos\n", paciente->pessoa.id);
         paciente = paciente->prox;   
     }        
-    printf(">>>>> [Número Total de Pacientes] <<<<<\n\n");    
+    printf(BRIGHT_GREEN">>>>> [Número Total de Pacientes] <<<<<\n\n");
 }
 
 /////////////////////////////// Função Running ///////////////////////////////
@@ -237,8 +237,8 @@ void running(PACIENTES informacao) {
         printf(GREEN"///   4. Consultar Doentes - Tensão              ///"RESET"\n");
         printf(MAGENTA"///   5. Novo Registo Clínico                    ///"RESET"\n");
         printf(CYAN"///   6. Listar toda a informação de um paciente ///"RESET"\n");
-        printf(CYAN"///   7. Número Total de Pacientes e de Registos ///"RESET"\n");
-        printf("///   8. Sair                                    ///\n");
+        printf(BRIGHT_GREEN"///   7. Número Total de Pacientes e de Registos ///"RESET"\n");
+        printf(BRIGHT_RED"///   8. Sair                                    ///"RESET"\n");
         printf("////// [Hospital da Universidade de Coimbra]  //////\n");
         printf("\nQual a operação pretendida?\n> ");
         int choice = input_numeros(0);
@@ -265,7 +265,7 @@ void running(PACIENTES informacao) {
                 numero_total(informacao);
                 break;    
             case 8:   // Sair do programa
-                printf("\n >>> Programa Terminado <<<\n\n");
+                printf(BRIGHT_RED"\n >>> Programa Terminado <<<"RESET"\n\n");
                 return;
             default:
                 printf("\n...Input Não Reconhecido...\n");
