@@ -83,7 +83,7 @@ void imprime(PACIENTES lista){
 // Case 4 : Consultar Doentes - Tensão Máxima
 void listar_tensoes_acima(PACIENTES lista) {
     printf(MAGENTA"\n\n>>>>> [Lista de Tensão dos Pacientes HUC-S_MED] <<<<<\n");
-    printf("Valor limite da Tensão Maxima: ");
+    printf("Valor da Tensão Maxima: ");
     int limite = input_numeros(0), encontrados = 0;
     REGISTOS temp = NULL; // Criamos uma lista temporária
     size_t size = lista->pessoa.id; // Vamos buscar ao Header o tamanho da Lista
@@ -213,7 +213,7 @@ void listar_informacao_paciente(PACIENTES lista) {
 // Case 7 : Número Total de Pacientes e de Registos
 void numero_total(PACIENTES info){
     int size = info->pessoa.id; // Número Total de pacientes armazenado no Header
-    printf(YELLOW"\n\n>>>>> [Número Total de Pacientes] <<<<<\n");
+    printf(YELLOW"\n>>>>> [Número Total de Pacientes] <<<<<\n");
     printf("Número Total de Pacientes: %d\n", size);
     PACIENTES paciente = info->prox; // Saltamos o Header
     for (int i = 0; i < size; i++){
@@ -223,7 +223,7 @@ void numero_total(PACIENTES info){
             printf("Paciente com ID Nº%d não tem registos\n", paciente->pessoa.id);
         paciente = paciente->prox;   
     }        
-    printf(">>>>> [Número Total de Pacientes] <<<<<\n\n");
+    printf(">>>>> [Número Total de Pacientes] <<<<<\n");
 }
 
 /////////////////////////////// Função Running ///////////////////////////////
@@ -234,7 +234,7 @@ void running(PACIENTES informacao) {
         printf(GREEN"///   1. Novo Paciente                           ///\n");
         printf(RED"///   2. Eliminar Paciente Existente             ///\n");
         printf(MAGENTA"///   3. Consultar Pacientes - Ordem Alfabética  ///\n");
-        printf(MAGENTA"///   4. Consultar Pacientes - Tensão            ///\n");
+        printf(MAGENTA"///   4. Consultar Pacientes - Tensão  Máxima    ///\n");
         printf(GREEN"///   5. Novo Registo Clínico                    ///\n");
         printf(MAGENTA"///   6. Consultar Pacientes - Listar Paciente   ///\n");
         printf(YELLOW"///   7. Número Total de Pacientes               ///\n");

@@ -87,17 +87,20 @@ void save_registos(PACIENTES lista_pacientes) {
         printf("Erro ao fechar o ficheiro registos.txt (Processo: Saving)\n");   
         exit(1);
     }
-    PACIENTES paciente = lista_pacientes;
+    PACIENTES paciente = lista_pacientes->prox; // Saltamos o Header
     while (paciente != NULL) {
-        REGISTOS registro = paciente->pessoa.pessoa_registo;
-        while (registro != NULL) {
-            fprintf(ficheiro, "%d\n", paciente->pessoa.id);
-            fprintf(ficheiro, "%d/%d/%d\n", registro->reg.data_registo.dia, registro->reg.data_registo.mes, registro->reg.data_registo.ano);
-            fprintf(ficheiro, "%d\n", registro->reg.tensao_max);
-            fprintf(ficheiro, "%d\n", registro->reg.tensao_min);
-            fprintf(ficheiro, "%d\n", registro->reg.peso);
-            fprintf(ficheiro, "%d\n", registro->reg.altura);
-            registro = registro->prox;
+        REGISTOS ficha = paciente->pessoa.pessoa_registo;
+        if (ficha != NULL){
+            ficha = ficha->prox; // Saltamos o Header
+            while (ficha != NULL) {
+                fprintf(ficheiro, "%d\n", paciente->pessoa.id);
+                fprintf(ficheiro, "%d/%d/%d\n", ficha->reg.data_registo.dia, ficha->reg.data_registo.mes, ficha->reg.data_registo.ano);
+                fprintf(ficheiro, "%d\n", ficha->reg.tensao_max);
+                fprintf(ficheiro, "%d\n", ficha->reg.tensao_min);
+                fprintf(ficheiro, "%d\n", ficha->reg.peso);
+                fprintf(ficheiro, "%d\n", ficha->reg.altura);
+                ficha = ficha->prox;
+            }
         }
         paciente = paciente->prox;
     }
